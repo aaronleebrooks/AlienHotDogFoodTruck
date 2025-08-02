@@ -29,6 +29,10 @@ func _ready() -> void:
 	# Connect UIManager signals
 	UIManager.screen_changed.connect(_on_screen_changed)
 	
+	# Connect SaveManager signals
+	SaveManager.load_completed.connect(_on_save_load_completed)
+	SaveManager.load_failed.connect(_on_save_load_failed)
+	
 	# Connect system signals
 	production_system.hot_dog_produced.connect(_on_hot_dog_produced)
 	economy_system.money_changed.connect(_on_money_changed)
@@ -109,6 +113,18 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
 	print("MainScene: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
 
+# Save/Load signal handlers
+func _on_save_load_completed() -> void:
+	"""Handle save/load completion"""
+	print("MainScene: Save/load completed successfully")
+	SaveManager.restore_game_state()
+	GameManager.start_game()
+	UIManager.show_screen("game")
+
+func _on_save_load_failed() -> void:
+	"""Handle save/load failure"""
+	print("MainScene: Save/load failed")
+
 # Signal handlers for MenuUI
 func _on_start_game_requested() -> void:
 	"""Handle start game request from menu"""
@@ -120,8 +136,7 @@ func _on_continue_game_requested() -> void:
 	"""Handle continue game request from menu"""
 	print("MainScene: Continue game requested")
 	SaveManager.load_game()
-	GameManager.start_game()
-	UIManager.show_screen("game")
+	# Game will be started after load completion in _on_save_load_completed
 
 func _on_settings_requested() -> void:
 	"""Handle settings request from menu"""

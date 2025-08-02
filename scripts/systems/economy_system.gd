@@ -71,6 +71,13 @@ func get_current_money() -> float:
 	"""Get current money amount"""
 	return current_money
 
+func set_current_money(amount: float) -> void:
+	"""Set current money amount (for save/load)"""
+	var old_money = current_money
+	current_money = amount
+	print("EconomySystem: Money set to $%.2f (was $%.2f)" % [amount, old_money])
+	# Don't emit money_changed signal to avoid UI updates during load
+
 func get_economy_stats() -> Dictionary:
 	"""Get current economy statistics"""
 	return {
