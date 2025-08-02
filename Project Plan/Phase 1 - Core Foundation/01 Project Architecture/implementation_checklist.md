@@ -13,7 +13,7 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 ## Core Architecture Setup
 
 ### 1. Project Structure Creation
-- [ ] Create main folder structure (scenes/, scripts/, assets/, etc.)
+- [x] Create main folder structure (scenes/, scripts/, assets/, etc.)
 - [ ] Set up autoload scripts folder
 - [ ] Create UI components folder
 - [ ] Set up data structures folder
