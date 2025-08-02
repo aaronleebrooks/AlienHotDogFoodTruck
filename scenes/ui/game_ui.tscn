@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://diu52crhm2sc0"]
+
+[ext_resource type="Script" path="res://scripts/ui/game_ui.gd" id="1_0x0x0"]
+
+[node name="GameUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_0x0x0")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+
+[node name="MoneyLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "Money: $0"
+size_flags_horizontal = 3
+
+[node name="TimeLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "Time: 0.0s"
+size_flags_horizontal = 3
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+layout_mode = 2
+text = "Menu"
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 50.0
+offset_bottom = 52.0
+
+[node name="GameArea" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -100.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="StatusLabel" type="Label" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+text = "Game Running"
+horizontal_alignment = 1
+
+[node name="PauseButton" type="Button" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+text = "Pause"
+
+[node name="SaveButton" type="Button" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+text = "Save Game" 
