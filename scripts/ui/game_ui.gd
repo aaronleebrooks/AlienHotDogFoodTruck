@@ -31,13 +31,8 @@ func _ready() -> void:
 	SaveManager.save_failed.connect(_on_save_failed)
 	
 	# Connect EconomySystem signals (accessed through main scene)
-	var main_scene = get_parent().get_parent()
-	var economy_system = main_scene.get_economy_system()
-	if economy_system:
-		economy_system.money_changed.connect(_on_money_changed)
-		print("GameUI: Connected to EconomySystem")
-	else:
-		print("GameUI: Warning - EconomySystem not found")
+	# Use call_deferred to ensure systems are ready
+	call_deferred("_connect_to_systems")
 
 func _process(_delta: float) -> void:
 	"""Update UI elements"""
@@ -91,6 +86,16 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
 	print("GameUI: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
 	money_label.text = "Money: $%.2f" % new_amount
+
+func _connect_to_systems() -> void:
+	"""Connect to systems after they're ready"""
+	var main_scene = get_parent().get_parent()
+	var economy_system = main_scene.get_economy_system()
+	if economy_system:
+		economy_system.money_changed.connect(_on_money_changed)
+		print("GameUI: Connected to EconomySystem")
+	else:
+		print("GameUI: Warning - EconomySystem not found")
 
 func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""

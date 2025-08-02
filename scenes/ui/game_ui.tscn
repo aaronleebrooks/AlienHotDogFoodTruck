@@ -1,12 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://diu52crhm2sc0"]
+[gd_scene load_steps=2 format=3 uid="uid://ba07fkwk83bm0"]
 
-[ext_resource type="Script" path="res://scripts/ui/game_ui.gd" id="1_0x0x0"]
+[ext_resource type="Script" uid="uid://c8ca7i11dv1sn" path="res://scripts/ui/game_ui.gd" id="1_0x0x0"]
 
 [node name="GameUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_0x0x0")
 
 [node name="TopBar" type="HBoxContainer" parent="."]
@@ -14,16 +16,17 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 50.0
+grow_horizontal = 2
 
 [node name="MoneyLabel" type="Label" parent="TopBar"]
 layout_mode = 2
-text = "Money: $0"
 size_flags_horizontal = 3
+text = "Money: $0"
 
 [node name="TimeLabel" type="Label" parent="TopBar"]
 layout_mode = 2
-text = "Time: 0.0s"
 size_flags_horizontal = 3
+text = "Time: 0.0s"
 
 [node name="MenuButton" type="Button" parent="TopBar"]
 layout_mode = 2
@@ -35,22 +38,29 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_top = 50.0
 offset_bottom = 52.0
+grow_horizontal = 2
 
 [node name="GameArea" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -100.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameArea"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="StatusLabel" type="Label" parent="GameArea/VBoxContainer"]
 layout_mode = 2
@@ -67,4 +77,4 @@ text = "Save Game"
 
 [node name="AddHotDogButton" type="Button" parent="GameArea/VBoxContainer"]
 layout_mode = 2
-text = "Add Hot Dog to Queue" 
+text = "Add Hot Dog to Queue"
