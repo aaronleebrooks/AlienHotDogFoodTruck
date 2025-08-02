@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
+[gd_scene load_steps=2 format=3 uid="uid://8kt0w1ipf8o8"]
 
 [ext_resource type="Script" path="res://scripts/components/modal_dialog.gd" id="1_0a1b4"]
 

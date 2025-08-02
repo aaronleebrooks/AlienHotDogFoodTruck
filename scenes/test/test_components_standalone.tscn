@@ -1,15 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://eslqv5wwcv6p"]
+[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
 
-[ext_resource type="Script" uid="uid://by2ycwoe8vo87" path="res://scripts/test/test_components.gd" id="1_0a1b6"]
+[ext_resource type="Script" path="res://scripts/test/test_components_standalone.gd" id="1_0a1b7"]
 
-[node name="TestComponents" type="Control"]
+[node name="TestComponentsStandalone" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_0a1b6")
+script = ExtResource("1_0a1b7")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -25,7 +25,7 @@ grow_vertical = 2
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "Component Test Scene"
+text = "Component Test Scene (Standalone)"
 horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
@@ -47,6 +47,10 @@ text = "Test Modal Dialog"
 layout_mode = 2
 text = "Test HUD"
 
-[node name="BackButton" type="Button" parent="VBoxContainer"]
+[node name="ClearAllButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Back to Main"
+text = "Clear All Components"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Quit Test" 
