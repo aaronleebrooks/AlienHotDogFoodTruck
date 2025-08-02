@@ -7,11 +7,11 @@ class_name SignalUtils
 static var _connections: Dictionary = {}
 
 # Connection management
-static func connect_signal(signal_obj: Object, signal_name: String, callable: Callable, connection_id: String = "") -> bool:
+static func connect_signal(signal_obj: Object, signal_name: String, callable: Callable, connection_id: String = "") -> String:
 	"""Connect a signal and track the connection"""
 	if not signal_obj or not signal_obj.has_signal(signal_name):
 		print("SignalUtils: Cannot connect signal %s - object or signal not found" % signal_name)
-		return false
+		return ""
 	
 	# Generate connection ID if not provided
 	if connection_id.is_empty():
@@ -31,7 +31,7 @@ static func connect_signal(signal_obj: Object, signal_name: String, callable: Ca
 	_connections[connection_id]["connected"] = true
 	
 	print("SignalUtils: Connected signal %s with ID %s" % [signal_name, connection_id])
-	return true
+	return connection_id
 
 static func disconnect_signal(connection_id: String) -> bool:
 	"""Disconnect a signal by connection ID"""
