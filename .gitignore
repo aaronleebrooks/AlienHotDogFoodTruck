@@ -1,0 +1,148 @@
+# Godot-specific ignores
+.godot/
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+mono_crash.*
+
+# System/tool-specific ignores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-specific ignores
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build outputs
+builds/
+export/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Backup files
+*.bak
+*.backup
+
+# User-specific files
+user://
+
+# Project-specific ignores
+# Uncomment and modify as needed for your project
+# *.import
+# *.import.*
+# *.translation
+
+# Large binary files (uncomment if you have large assets)
+# *.psd
+# *.ai
+# *.blend
+# *.fbx
+# *.obj
+
+# Audio files (uncomment if you have large audio files)
+# *.wav
+# *.ogg
+# *.mp3
+
+# Video files (uncomment if you have video files)
+# *.mp4
+# *.avi
+# *.mov
+
+# Documentation builds
+docs/_build/
+docs/build/
+
+# Test coverage reports
+coverage/
+*.coverage
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Package manager files (if using any)
+node_modules/
+package-lock.json
+yarn.lock
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Local configuration files
+config.local.json
+settings.local.json
+
+# Debug files
+debug.log
+error.log
+crash.log
+
+# Performance profiling data
+*.prof
+*.trace
+
+# Memory dumps
+*.dmp
+*.mdmp
+
+# Crash reports
+crash_*.txt
+crash_*.log
+
+# Auto-generated files
+*.generated.*
+generated/
+auto/
+
+# Cache directories
+.cache/
+cache/
+tmp/
+
+# Backup directories
+backup/
+backups/
+
+# Archive files
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Lock files
+*.lock
+
+# Temporary directories
+temp/
+temporary/
