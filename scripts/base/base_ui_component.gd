@@ -8,7 +8,6 @@ class_name BaseUIComponent
 @export var component_version: String = "1.0.0"
 
 # UI state
-var is_component_visible: bool = true
 var is_interactive: bool = true
 var is_focused: bool = false
 
@@ -57,8 +56,7 @@ func _apply_custom_styles() -> void:
 
 func show_component() -> void:
 	"""Show the component with optional animation"""
-	if not is_component_visible:
-		is_component_visible = true
+	if not is_visible:
 		visible = true
 		
 		if use_animations:
@@ -71,8 +69,8 @@ func show_component() -> void:
 
 func hide_component() -> void:
 	"""Hide the component with optional animation"""
-	if is_component_visible:
-		is_component_visible = false
+	if is_visible:
+		visible = false
 		
 		if use_animations:
 			_animate_hide()
@@ -127,7 +125,7 @@ func get_component_info() -> Dictionary:
 	return {
 		"name": component_name,
 		"version": component_version,
-		"visible": is_component_visible,
+		"visible": is_visible,
 		"interactive": is_interactive,
 		"focused": is_focused
 	}
