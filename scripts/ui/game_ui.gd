@@ -9,6 +9,7 @@ extends Control
 @onready var status_label: Label = $GameArea/VBoxContainer/StatusLabel
 @onready var pause_button: Button = $GameArea/VBoxContainer/PauseButton
 @onready var save_button: Button = $GameArea/VBoxContainer/SaveButton
+@onready var add_hot_dog_button: Button = $GameArea/VBoxContainer/AddHotDogButton
 
 func _ready() -> void:
 	"""Initialize the game UI"""
@@ -18,6 +19,7 @@ func _ready() -> void:
 	menu_button.pressed.connect(_on_menu_pressed)
 	pause_button.pressed.connect(_on_pause_pressed)
 	save_button.pressed.connect(_on_save_pressed)
+	add_hot_dog_button.pressed.connect(_on_add_hot_dog_pressed)
 	
 	# Connect GameManager signals
 	GameManager.game_started.connect(_on_game_started)
@@ -29,7 +31,8 @@ func _ready() -> void:
 	SaveManager.save_failed.connect(_on_save_failed)
 	
 	# Connect EconomySystem signals (accessed through main scene)
-	get_parent().get_parent().get_node("Systems/EconomySystem").money_changed.connect(_on_money_changed)
+	var main_scene = get_parent().get_parent()
+	main_scene.get_economy_system().money_changed.connect(_on_money_changed)
 
 func _process(_delta: float) -> void:
 	"""Update UI elements"""
@@ -82,4 +85,11 @@ func _on_save_failed() -> void:
 func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
 	print("GameUI: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
-	money_label.text = "Money: $%.2f" % new_amount 
+	money_label.text = "Money: $%.2f" % new_amount
+
+func _on_add_hot_dog_pressed() -> void:
+	"""Handle add hot dog button press"""
+	print("GameUI: Add hot dog pressed")
+	# Emit signal to main scene
+	var main_scene = get_parent().get_parent()
+	main_scene.add_hot_dog_to_queue_requested.emit() 

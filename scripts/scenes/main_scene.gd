@@ -16,6 +16,9 @@ extends Control
 # Current active UI
 var current_ui: Control
 
+# Signals
+signal add_hot_dog_to_queue_requested
+
 func _ready() -> void:
 	"""Initialize the main scene"""
 	print("MainScene: Initialized")
@@ -26,6 +29,9 @@ func _ready() -> void:
 	# Connect system signals
 	production_system.hot_dog_produced.connect(_on_hot_dog_produced)
 	economy_system.money_changed.connect(_on_money_changed)
+	
+	# Connect UI signals
+	add_hot_dog_to_queue_requested.connect(_on_add_hot_dog_requested)
 	
 	# Show initial UI (menu)
 	show_ui("menu")
@@ -65,4 +71,17 @@ func _on_hot_dog_produced() -> void:
 
 func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
-	print("MainScene: Money changed by $%.2f. New total: $%.2f" % [change, new_amount]) 
+	print("MainScene: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
+
+func get_production_system() -> Node:
+	"""Get reference to production system"""
+	return production_system
+
+func get_economy_system() -> Node:
+	"""Get reference to economy system"""
+	return economy_system
+
+func _on_add_hot_dog_requested() -> void:
+	"""Handle add hot dog request from UI"""
+	print("MainScene: Add hot dog requested")
+	production_system.add_to_queue() 

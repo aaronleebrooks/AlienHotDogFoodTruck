@@ -63,4 +63,8 @@ text = "Pause"
 
 [node name="SaveButton" type="Button" parent="GameArea/VBoxContainer"]
 layout_mode = 2
-text = "Save Game" 
+text = "Save Game"
+
+[node name="AddHotDogButton" type="Button" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+text = "Add Hot Dog to Queue" 

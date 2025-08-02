@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bqxvn8yqxqxqx"]
 
-[ext_resource type="Script" path="res://scripts/scenes/main_scene.gd" id="1_0x0x0"]
+[ext_resource type="Script" uid="uid://cjrc30gk6uohv" path="res://scripts/scenes/main_scene.gd" id="1_0x0x0"]
 [ext_resource type="PackedScene" path="res://scenes/ui/menu_ui.tscn" id="2_0x0x0"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_ui.tscn" id="3_0x0x0"]
 [ext_resource type="PackedScene" path="res://scenes/systems/production_system.tscn" id="4_0x0x0"]
@@ -11,6 +11,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_0x0x0")
 
 [node name="UI" type="Control" parent="."]
@@ -18,40 +20,37 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-
-[node name="GameUI" type="Control" parent="UI"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-visible = false
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MenuUI" parent="UI" instance=ExtResource("2_0x0x0")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="GameUI" parent="UI" instance=ExtResource("3_0x0x0")]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
 visible = false
+layout_mode = 1
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="SettingsUI" type="Control" parent="UI"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-visible = false
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="LoadingUI" type="Control" parent="UI"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-visible = false
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="GameWorld" type="Node2D" parent="."]
 
@@ -59,4 +58,4 @@ visible = false
 
 [node name="ProductionSystem" parent="Systems" instance=ExtResource("4_0x0x0")]
 
-[node name="EconomySystem" parent="Systems" instance=ExtResource("5_0x0x0")] 
+[node name="EconomySystem" parent="Systems" instance=ExtResource("5_0x0x0")]
