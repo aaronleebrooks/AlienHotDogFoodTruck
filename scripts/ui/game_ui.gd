@@ -17,28 +17,40 @@ signal pause_game_requested
 signal save_game_requested
 signal menu_requested
 
+# Signal connection tracking
+var signal_connections: Array[String] = []
+
 func _ready() -> void:
 	"""Initialize the game UI"""
 	print("GameUI: Initialized")
 	
+	# Set up signal connections using SignalUtils
+	setup_signal_connections()
+
+func setup_signal_connections() -> void:
+	"""Set up all signal connections using SignalUtils"""
+	print("GameUI: Setting up signal connections...")
+	
 	# Connect button signals
-	menu_button.pressed.connect(_on_menu_pressed)
-	pause_button.pressed.connect(_on_pause_pressed)
-	save_button.pressed.connect(_on_save_pressed)
-	add_hot_dog_button.pressed.connect(_on_add_hot_dog_pressed)
+	signal_connections.append(SignalUtils.connect_signal(menu_button, "pressed", _on_menu_pressed))
+	signal_connections.append(SignalUtils.connect_signal(pause_button, "pressed", _on_pause_pressed))
+	signal_connections.append(SignalUtils.connect_signal(save_button, "pressed", _on_save_pressed))
+	signal_connections.append(SignalUtils.connect_signal(add_hot_dog_button, "pressed", _on_add_hot_dog_pressed))
 	
 	# Connect GameManager signals
-	GameManager.game_started.connect(_on_game_started)
-	GameManager.game_paused.connect(_on_game_paused)
-	GameManager.game_resumed.connect(_on_game_resumed)
+	signal_connections.append(SignalUtils.connect_signal(GameManager, "game_started", _on_game_started))
+	signal_connections.append(SignalUtils.connect_signal(GameManager, "game_paused", _on_game_paused))
+	signal_connections.append(SignalUtils.connect_signal(GameManager, "game_resumed", _on_game_resumed))
 	
 	# Connect SaveManager signals
-	SaveManager.save_completed.connect(_on_save_completed)
-	SaveManager.save_failed.connect(_on_save_failed)
+	signal_connections.append(SignalUtils.connect_signal(SaveManager, "save_completed", _on_save_completed))
+	signal_connections.append(SignalUtils.connect_signal(SaveManager, "save_failed", _on_save_failed))
 	
 	# Connect EconomySystem signals (accessed through main scene)
 	# Use call_deferred to ensure systems are ready
 	call_deferred("_connect_to_systems")
+	
+	print("GameUI: Signal connections set up. Total connections: %d" % signal_connections.size())
 
 func _process(_delta: float) -> void:
 	"""Update UI elements"""
@@ -58,6 +70,11 @@ func _on_save_pressed() -> void:
 	"""Handle save button press"""
 	print("GameUI: Save pressed")
 	save_game_requested.emit()
+
+func _on_add_hot_dog_pressed() -> void:
+	"""Handle add hot dog button press"""
+	print("GameUI: Add hot dog pressed")
+	add_hot_dog_requested.emit()
 
 func _on_game_started() -> void:
 	"""Handle game started signal"""
@@ -98,45 +115,34 @@ func update_money_display(amount: float) -> void:
 func update_production_info(produced: int) -> void:
 	"""Update production information display"""
 	# Note: This would need a production info label in the UI
-	print("GameUI: Production info updated - Produced: %d" % produced)
+	print("GameUI: Production info updated - Total produced: %d" % produced)
 
 func update_queue_info(current: int, max_size: int) -> void:
 	"""Update queue information display"""
 	# Note: This would need a queue info label in the UI
-	print("GameUI: Queue info updated - %d/%d" % [current, max_size])
+	print("GameUI: Queue info updated - Current: %d/%d" % [current, max_size])
 
 func _connect_to_systems() -> void:
-	"""Connect to systems after they're ready"""
-	var economy_system = %EconomySystem
-	if economy_system:
-		economy_system.money_changed.connect(_on_money_changed)
-		print("GameUI: Connected to EconomySystem")
-		
-		# Get initial money amount
-		var current_money = economy_system.get_current_money()
-		money_label.text = "Money: $%.2f" % current_money
-		print("GameUI: Initial money: $%.2f" % current_money)
+	"""Connect to system signals"""
+	# Get references to systems through the main scene
+	var main_scene = get_parent().get_parent()
+	if main_scene and main_scene.has_method("get_economy_system"):
+		var economy_system = main_scene.get_economy_system()
+		if economy_system:
+			signal_connections.append(SignalUtils.connect_signal(economy_system, "money_changed", _on_money_changed))
+			print("GameUI: Connected to EconomySystem")
+		else:
+			print("GameUI: EconomySystem not found")
 	else:
-		print("GameUI: Warning - EconomySystem not found")
-
-func _on_add_hot_dog_pressed() -> void:
-	"""Handle add hot dog button press"""
-	print("GameUI: Add hot dog pressed")
-	add_hot_dog_requested.emit()
+		print("GameUI: Main scene or get_economy_system method not found")
 
 func _exit_tree() -> void:
 	"""Clean up when UI is removed"""
-	# Disconnect all signals to prevent memory leaks
-	if GameManager:
-		GameManager.game_started.disconnect(_on_game_started)
-		GameManager.game_paused.disconnect(_on_game_paused)
-		GameManager.game_resumed.disconnect(_on_game_resumed)
+	print("GameUI: Cleaning up signal connections...")
 	
-	if SaveManager:
-		SaveManager.save_completed.disconnect(_on_save_completed)
-		SaveManager.save_failed.disconnect(_on_save_failed)
+	# Disconnect all tracked signals
+	for connection_id in signal_connections:
+		SignalUtils.disconnect_signal(connection_id)
 	
-	# Disconnect from systems (using % identifiers)
-	var economy_system = %EconomySystem
-	if economy_system:
-		economy_system.money_changed.disconnect(_on_money_changed) 
+	signal_connections.clear()
+	print("GameUI: Signal cleanup completed") 

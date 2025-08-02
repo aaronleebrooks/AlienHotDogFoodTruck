@@ -35,9 +35,9 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Set up scene dependencies
 
 ### 4. Script Organization
-- [ ] Create base classes for common functionality
-- [ ] Set up inheritance hierarchy
-- [ ] Create utility functions
+- [x] Create base classes for common functionality
+- [x] Set up inheritance hierarchy
+- [x] Create utility functions
 - [ ] Set up signal connections
 - [ ] Create resource classes
 

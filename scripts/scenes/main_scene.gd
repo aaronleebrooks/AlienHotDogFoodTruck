@@ -16,6 +16,9 @@ extends Control
 # Current active UI
 var current_ui: Control
 
+# Signal connection tracking
+var signal_connections: Array[String] = []
+
 func _ready() -> void:
 	"""Initialize the main scene"""
 	print("MainScene: Initialized")
@@ -26,55 +29,51 @@ func _ready() -> void:
 	print("MainScene: Scene tree structure:")
 	_print_scene_tree(self, 0)
 	
-	# Connect UIManager signals
-	UIManager.screen_changed.connect(_on_screen_changed)
-	
-	# Connect SaveManager signals
-	SaveManager.load_completed.connect(_on_save_load_completed)
-	SaveManager.load_failed.connect(_on_save_load_failed)
-	
-	# Connect system signals
-	production_system.hot_dog_produced.connect(_on_hot_dog_produced)
-	economy_system.money_changed.connect(_on_money_changed)
-	
-	# Connect GameUI signals
-	game_ui.add_hot_dog_requested.connect(_on_add_hot_dog_requested)
-	game_ui.pause_game_requested.connect(_on_pause_game_requested)
-	game_ui.save_game_requested.connect(_on_save_game_requested)
-	game_ui.menu_requested.connect(_on_menu_requested)
-	
-	# Connect MenuUI signals
-	menu_ui.start_game_requested.connect(_on_start_game_requested)
-	menu_ui.continue_game_requested.connect(_on_continue_game_requested)
-	menu_ui.settings_requested.connect(_on_settings_requested)
-	menu_ui.quit_game_requested.connect(_on_quit_game_requested)
+	# Set up signal connections using SignalUtils
+	setup_signal_connections()
 	
 	# Show initial UI (menu)
 	show_ui("menu")
 
+func setup_signal_connections() -> void:
+	"""Set up all signal connections using SignalUtils"""
+	print("MainScene: Setting up signal connections...")
+	
+	# Connect UIManager signals
+	signal_connections.append(SignalUtils.connect_signal(UIManager, "screen_changed", _on_screen_changed))
+	
+	# Connect SaveManager signals
+	signal_connections.append(SignalUtils.connect_signal(SaveManager, "load_completed", _on_save_load_completed))
+	signal_connections.append(SignalUtils.connect_signal(SaveManager, "load_failed", _on_save_load_failed))
+	
+	# Connect system signals
+	signal_connections.append(SignalUtils.connect_signal(production_system, "hot_dog_produced", _on_hot_dog_produced))
+	signal_connections.append(SignalUtils.connect_signal(economy_system, "money_changed", _on_money_changed))
+	
+	# Connect GameUI signals
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "add_hot_dog_requested", _on_add_hot_dog_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "pause_game_requested", _on_pause_game_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "save_game_requested", _on_save_game_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "menu_requested", _on_menu_requested))
+	
+	# Connect MenuUI signals
+	signal_connections.append(SignalUtils.connect_signal(menu_ui, "start_game_requested", _on_start_game_requested))
+	signal_connections.append(SignalUtils.connect_signal(menu_ui, "continue_game_requested", _on_continue_game_requested))
+	signal_connections.append(SignalUtils.connect_signal(menu_ui, "settings_requested", _on_settings_requested))
+	signal_connections.append(SignalUtils.connect_signal(menu_ui, "quit_game_requested", _on_quit_game_requested))
+	
+	print("MainScene: Signal connections set up. Total connections: %d" % signal_connections.size())
+
 func _exit_tree() -> void:
 	"""Clean up when scene is removed"""
-	# Disconnect all signals to prevent memory leaks
-	if UIManager:
-		UIManager.screen_changed.disconnect(_on_screen_changed)
+	print("MainScene: Cleaning up signal connections...")
 	
-	if production_system:
-		production_system.hot_dog_produced.disconnect(_on_hot_dog_produced)
+	# Disconnect all tracked signals
+	for connection_id in signal_connections:
+		SignalUtils.disconnect_signal(connection_id)
 	
-	if economy_system:
-		economy_system.money_changed.disconnect(_on_money_changed)
-	
-	if game_ui:
-		game_ui.add_hot_dog_requested.disconnect(_on_add_hot_dog_requested)
-		game_ui.pause_game_requested.disconnect(_on_pause_game_requested)
-		game_ui.save_game_requested.disconnect(_on_save_game_requested)
-		game_ui.menu_requested.disconnect(_on_menu_requested)
-	
-	if menu_ui:
-		menu_ui.start_game_requested.disconnect(_on_start_game_requested)
-		menu_ui.continue_game_requested.disconnect(_on_continue_game_requested)
-		menu_ui.settings_requested.disconnect(_on_settings_requested)
-		menu_ui.quit_game_requested.disconnect(_on_quit_game_requested)
+	signal_connections.clear()
+	print("MainScene: Signal cleanup completed")
 
 func show_ui(ui_name: String) -> void:
 	"""Show a specific UI screen"""
@@ -98,6 +97,15 @@ func show_ui(ui_name: String) -> void:
 	
 	current_ui.visible = true
 	print("MainScene: Showing UI: %s" % ui_name)
+
+# Helper methods for UI components to access systems
+func get_economy_system() -> Node:
+	"""Get reference to EconomySystem"""
+	return economy_system
+
+func get_production_system() -> Node:
+	"""Get reference to ProductionSystem"""
+	return production_system
 
 func _on_screen_changed(new_screen: String, old_screen: String) -> void:
 	"""Handle screen changes from UIManager"""
@@ -193,22 +201,6 @@ func _on_menu_requested() -> void:
 	"""Handle menu request from UI"""
 	print("MainScene: Menu requested")
 	UIManager.show_screen("menu")
-
-func get_production_system() -> Node:
-	"""Get reference to production system"""
-	if production_system:
-		return production_system
-	else:
-		print("MainScene: Warning - ProductionSystem not found")
-		return null
-
-func get_economy_system() -> Node:
-	"""Get reference to economy system"""
-	if economy_system:
-		return economy_system
-	else:
-		print("MainScene: Warning - EconomySystem not found")
-		return null
 
 func _print_scene_tree(node: Node, depth: int) -> void:
 	"""Print the scene tree structure for debugging"""
