@@ -15,10 +15,10 @@ func _ready() -> void:
 	"""Initialize the custom panel"""
 	update_display()
 	
-	if auto_show:
-		show_panel()
-	else:
-		hide_panel()
+	# Only auto-hide if explicitly set to false and not auto-show
+	if not auto_show:
+		# Don't automatically hide - let the parent control visibility
+		pass
 
 func update_display() -> void:
 	"""Update panel display with current title"""

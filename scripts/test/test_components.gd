@@ -54,15 +54,20 @@ func _on_test_panel_pressed() -> void:
 	if custom_panel_scene:
 		custom_panel_instance = custom_panel_scene.instantiate()
 		if custom_panel_instance:
+			print("TestComponents: Custom panel instantiated successfully")
 			custom_panel_instance.panel_title = "Test Panel"
 			custom_panel_instance.panel_opened.connect(_on_custom_panel_opened)
 			custom_panel_instance.panel_closed.connect(_on_custom_panel_closed)
 			add_child(custom_panel_instance)
 			
+			# Position the panel in the center of the screen
+			custom_panel_instance.position = Vector2(200, 200)
+			
 			# Check if the method exists before calling
 			if custom_panel_instance.has_method("show_panel"):
+				print("TestComponents: Calling show_panel() method")
 				custom_panel_instance.show_panel()
-				print("TestComponents: Custom panel instantiated and shown successfully")
+				print("TestComponents: Custom panel shown successfully")
 			else:
 				print("TestComponents: Error - show_panel method not found")
 		else:
@@ -126,14 +131,23 @@ func _on_custom_panel_opened() -> void:
 	print("TestComponents: Custom panel opened")
 	# Auto-close after 2 seconds
 	await get_tree().create_timer(2.0).timeout
-	if custom_panel_instance and custom_panel_instance.has_method("hide_panel"):
-		custom_panel_instance.hide_panel()
+	if custom_panel_instance and is_instance_valid(custom_panel_instance):
+		if custom_panel_instance.has_method("hide_panel"):
+			print("TestComponents: Auto-closing panel")
+			custom_panel_instance.hide_panel()
+		else:
+			print("TestComponents: Error - hide_panel method not found")
+	else:
+		print("TestComponents: Panel instance is null or invalid")
 
 func _on_custom_panel_closed() -> void:
 	print("TestComponents: Custom panel closed")
-	if custom_panel_instance:
+	if custom_panel_instance and is_instance_valid(custom_panel_instance):
 		custom_panel_instance.queue_free()
 		custom_panel_instance = null
+		print("TestComponents: Panel cleaned up")
+	else:
+		print("TestComponents: Panel instance was already null or invalid")
 
 func _on_dialog_confirmed() -> void:
 	print("TestComponents: Dialog confirmed")
