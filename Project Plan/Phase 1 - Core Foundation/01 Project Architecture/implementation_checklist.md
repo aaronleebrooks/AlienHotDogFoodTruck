@@ -8,7 +8,7 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Define coding standards and naming conventions
 - [x] Plan folder structure and organization
 - [x] Set up version control workflow
-- [ ] Create development environment setup guide
+- [x] Create development environment setup guide
 
 ## Core Architecture Setup
 
