@@ -14,11 +14,11 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 
 ### 1. Project Structure Creation
 - [x] Create main folder structure (scenes/, scripts/, assets/, etc.)
-- [ ] Set up autoload scripts folder
-- [ ] Create UI components folder
-- [ ] Set up data structures folder
-- [ ] Create utility scripts folder
-- [ ] Set up test scripts folder
+- [x] Set up autoload scripts folder
+- [x] Create UI components folder
+- [x] Set up data structures folder
+- [x] Create utility scripts folder
+- [x] Set up test scripts folder
 
 ### 2. Autoload Configuration
 - [ ] Configure GameManager as autoload
