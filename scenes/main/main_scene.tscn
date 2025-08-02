@@ -57,6 +57,18 @@ grow_vertical = 2
 
 [node name="ProductionSystem" parent="Systems" instance=ExtResource("4_0x0x0")]
 unique_name_in_owner = true
+production_rate = null
+max_queue_size = null
+system_name = null
+auto_initialize = null
+enable_performance_monitoring = null
+enable_dependency_checking = null
 
 [node name="EconomySystem" parent="Systems" instance=ExtResource("5_0x0x0")]
 unique_name_in_owner = true
+starting_money = null
+hot_dog_price = null
+system_name = null
+auto_initialize = null
+enable_performance_monitoring = null
+enable_dependency_checking = null

@@ -1,5 +1,4 @@
 extends RefCounted
-class_name ErrorHandler
 
 ## ErrorHandler
 ## 

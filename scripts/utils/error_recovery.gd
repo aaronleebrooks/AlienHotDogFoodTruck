@@ -1,25 +1,22 @@
 extends RefCounted
-class_name ErrorRecovery
 
 ## ErrorRecovery
 ## 
-## Error recovery mechanisms for automatic and manual error resolution.
+## Error recovery system for handling and recovering from various error types.
 ## 
-## This class provides recovery strategies for different types of errors,
-## including automatic recovery, user-guided recovery, and system recovery.
-## It works in conjunction with the ErrorHandler to provide comprehensive
-## error management.
+## This class provides a structured approach to recovering from errors
+## with automatic and user-guided recovery mechanisms.
 ## 
 ## Features:
-##   - Automatic recovery for common errors
-##   - User-guided recovery for complex errors
+##   - Automatic error recovery strategies
+##   - User-guided recovery options
+##   - Recovery tracking and statistics
+##   - Recovery cooldown management
 ##   - System state restoration
-##   - Resource reloading and fallback
-##   - Recovery attempt tracking
 ## 
 ## Example:
 ##   ErrorRecovery.attempt_automatic_recovery("SAVE_CORRUPTION_001")
-##   ErrorRecovery.start_user_recovery("UI_SIGNAL_001", recovery_options)
+##   ErrorRecovery.start_user_recovery("UI_SIGNAL_002")
 ## 
 ## @since: 1.0.0
 ## @category: Utility
