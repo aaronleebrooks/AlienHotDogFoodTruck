@@ -16,9 +16,6 @@ extends Control
 # Current active UI
 var current_ui: Control
 
-# Signals
-signal add_hot_dog_to_queue_requested
-
 func _ready() -> void:
 	"""Initialize the main scene"""
 	print("MainScene: Initialized")
@@ -36,8 +33,11 @@ func _ready() -> void:
 	production_system.hot_dog_produced.connect(_on_hot_dog_produced)
 	economy_system.money_changed.connect(_on_money_changed)
 	
-	# Connect UI signals
-	add_hot_dog_to_queue_requested.connect(_on_add_hot_dog_requested)
+	# Connect GameUI signals
+	game_ui.add_hot_dog_requested.connect(_on_add_hot_dog_requested)
+	game_ui.pause_game_requested.connect(_on_pause_game_requested)
+	game_ui.save_game_requested.connect(_on_save_game_requested)
+	game_ui.menu_requested.connect(_on_menu_requested)
 	
 	# Show initial UI (menu)
 	show_ui("menu")
@@ -109,4 +109,22 @@ func _print_scene_tree(node: Node, depth: int) -> void:
 func _on_add_hot_dog_requested() -> void:
 	"""Handle add hot dog request from UI"""
 	print("MainScene: Add hot dog requested")
-	production_system.add_to_queue() 
+	production_system.add_to_queue()
+
+func _on_pause_game_requested() -> void:
+	"""Handle pause game request from UI"""
+	print("MainScene: Pause game requested")
+	if GameManager.is_game_running:
+		GameManager.pause_game()
+	else:
+		GameManager.resume_game()
+
+func _on_save_game_requested() -> void:
+	"""Handle save game request from UI"""
+	print("MainScene: Save game requested")
+	SaveManager.save_game()
+
+func _on_menu_requested() -> void:
+	"""Handle menu request from UI"""
+	print("MainScene: Menu requested")
+	UIManager.show_screen("menu") 

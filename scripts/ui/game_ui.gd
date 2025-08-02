@@ -11,6 +11,12 @@ extends Control
 @onready var save_button: Button = $GameArea/VBoxContainer/SaveButton
 @onready var add_hot_dog_button: Button = $GameArea/VBoxContainer/AddHotDogButton
 
+# Signals - UI emits these, main scene listens
+signal add_hot_dog_requested
+signal pause_game_requested
+signal save_game_requested
+signal menu_requested
+
 func _ready() -> void:
 	"""Initialize the game UI"""
 	print("GameUI: Initialized")
@@ -41,20 +47,17 @@ func _process(_delta: float) -> void:
 func _on_menu_pressed() -> void:
 	"""Handle menu button press"""
 	print("GameUI: Menu pressed")
-	UIManager.show_screen("menu")
+	menu_requested.emit()
 
 func _on_pause_pressed() -> void:
 	"""Handle pause button press"""
 	print("GameUI: Pause pressed")
-	if GameManager.is_game_running:
-		GameManager.pause_game()
-	else:
-		GameManager.resume_game()
+	pause_game_requested.emit()
 
 func _on_save_pressed() -> void:
 	"""Handle save button press"""
 	print("GameUI: Save pressed")
-	SaveManager.save_game()
+	save_game_requested.emit()
 
 func _on_game_started() -> void:
 	"""Handle game started signal"""
@@ -99,21 +102,4 @@ func _connect_to_systems() -> void:
 func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""
 	print("GameUI: Add hot dog pressed")
-	print("GameUI: Current node path: %s" % get_path())
-	print("GameUI: Parent path: %s" % get_parent().get_path())
-	print("GameUI: Parent's parent path: %s" % get_parent().get_parent().get_path())
-	
-	# Try different approaches to find main scene
-	var main_scene = %MainScene
-	if main_scene:
-		print("GameUI: Found MainScene via %MainScene")
-		main_scene.add_hot_dog_to_queue_requested.emit()
-	else:
-		print("GameUI: Warning - Main scene not found via %MainScene")
-		# Fallback to parent approach
-		var parent_scene = get_parent().get_parent()
-		if parent_scene and parent_scene.has_method("add_hot_dog_to_queue_requested"):
-			print("GameUI: Using fallback parent approach")
-			parent_scene.add_hot_dog_to_queue_requested.emit()
-		else:
-			print("GameUI: Error - No valid main scene found") 
+	add_hot_dog_requested.emit() 
