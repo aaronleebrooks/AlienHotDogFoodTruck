@@ -1,7 +1,27 @@
 # Project Architecture Implementation Plan
 
 ## Overview
-This document provides the step-by-step implementation plan for establishing the project architecture for the hot dog idle game.
+This document provides the step-by-step implementation plan for establishing the project architecture for the hot dog idle game, incorporating proper Godot 4.4 event patterns and best practices.
+
+## Key Architecture Principles
+
+### 1. Event-Driven Communication
+- **UI Components emit signals** → **Main Scene listens** → **Main Scene coordinates systems**
+- **Systems emit signals** → **Main Scene listens** → **Main Scene updates UI**
+- **No direct method calls** between UI and systems
+- **Loose coupling** through signal-based communication
+
+### 2. Unique Name Identifiers
+- **Use `%` identifiers** for accessing nodes across the scene tree
+- **Set `unique_name_in_owner = true`** for nodes that need global access
+- **Avoid `get_parent().get_parent()`** chains
+- **Clean, maintainable node references**
+
+### 3. Proper Node Hierarchy
+- **Main Scene** coordinates all systems and UI
+- **UI Components** are self-contained and emit signals
+- **Systems** are independent and emit signals
+- **Autoloads** provide global services
 
 ## Phase 1A: Foundation Setup (Days 1-2)
 
@@ -57,409 +77,288 @@ This document provides the step-by-step implementation plan for establishing the
    # scripts/autoload/event_manager.gd
    extends Node
    
-   var _event_listeners: Dictionary = {}
-   
-   func register_event(event_name: String, callback: Callable):
-       if not _event_listeners.has(event_name):
-           _event_listeners[event_name] = []
-       _event_listeners[event_name].append(callback)
-   
-   func emit_event(event_name: String, data = null):
-       if _event_listeners.has(event_name):
-           for callback in _event_listeners[event_name]:
-               callback.call(data)
-   ```
-
-2. **Resource Management System**
-   - Create resource loading utilities
-   - Implement caching system
-   - Set up memory management
-
-#### Afternoon Session (4 hours)
-3. **Component System**
-   ```gdscript
-   # scripts/utils/base_component.gd
-   class_name BaseComponent
-   extends Node
-   
-   var component_id: String
-   var is_active: bool = true
+   # Use Godot's built-in signal system instead of custom events
+   # Systems emit signals, main scene coordinates
    
    func _ready():
-       component_id = name
-       register_component()
+       print("EventManager initialized")
    
-   func register_component():
-       EventManager.register_component(self)
-   
-   func activate():
-       is_active = true
-   
-   func deactivate():
-       is_active = false
+   func _exit_tree():
+       # Disconnect all signals to prevent memory leaks
+       # This is handled by individual systems
+       pass
    ```
 
-4. **Scene Management Setup**
-   - Create scene transition system
-   - Set up scene loading utilities
-   - Implement scene state management
-
-## Phase 1B: UI Framework (Days 3-4)
-
-### Day 3: UI Components
-
-#### Morning Session (4 hours)
-1. **Custom Button Component**
-   ```gdscript
-   # scenes/components/custom_button.tscn + .gd
-   extends Button
-   
-   @export var button_style: String = "default"
-   @export var hover_sound: AudioStream
-   @export var click_sound: AudioStream
-   
-   func _ready():
-       setup_button()
-       connect_signals()
-   
-   func setup_button():
-       # Apply consistent styling
-       add_theme_color_override("font_color", Color.WHITE)
-       add_theme_font_size_override("font_size", 16)
-   ```
-
-2. **Custom Panel Component**
-   - Create reusable panel with consistent styling
-   - Implement panel animations
-   - Set up panel state management
-
-#### Afternoon Session (4 hours)
-3. **Modal Dialog System**
-   ```gdscript
-   # scenes/components/modal_dialog.tscn + .gd
-   extends Control
-   
-   @export var dialog_title: String = ""
-   @export var dialog_content: String = ""
-   
-   signal dialog_closed
-   signal dialog_confirmed
-   
-   func show_dialog(title: String, content: String):
-       dialog_title = title
-       dialog_content = content
-       visible = true
-       # Add animation
-   ```
-
-4. **HUD Framework**
-   - Create base HUD structure
-   - Implement HUD element management
-   - Set up HUD update system
-
-### Day 4: Navigation and State Management
-
-#### Morning Session (4 hours)
-1. **UI Manager Implementation**
-   ```gdscript
-   # scripts/autoload/ui_manager.gd
-   extends Node
-   
-   var current_scene: Node
-   var scene_stack: Array[String] = []
-   
-   func change_scene(scene_path: String):
-       var new_scene = load(scene_path).instantiate()
-       get_tree().current_scene.queue_free()
-       get_tree().current_scene = new_scene
-       scene_stack.append(scene_path)
-   
-   func go_back():
-       if scene_stack.size() > 1:
-           scene_stack.pop_back()
-           change_scene(scene_stack[-1])
-   ```
-
-2. **Menu System**
-   - Create main menu structure
-   - Implement menu navigation
-   - Set up menu state management
-
-#### Afternoon Session (4 hours)
-3. **Settings System**
-   - Create settings panel
-   - Implement settings persistence
-   - Set up settings validation
-
-4. **Loading Screen System**
-   - Create loading screen UI
-   - Implement progress tracking
-   - Set up loading animations
-
-## Phase 1C: Data Management (Days 5-6)
-
-### Day 5: Save System Foundation
-
-#### Morning Session (4 hours)
-1. **Save Data Structures**
-   ```gdscript
-   # scripts/data/save_data.gd
-   class_name SaveData
-   extends Resource
-   
-   @export var version: String = "1.0.0"
-   @export var save_date: String = ""
-   @export var game_data: GameData
-   @export var settings: Dictionary = {}
-   
-   func to_dict() -> Dictionary:
-       return {
-           "version": version,
-           "save_date": save_date,
-           "game_data": game_data.to_dict(),
-           "settings": settings
-       }
-   
-   static func from_dict(data: Dictionary) -> SaveData:
-       var save_data = SaveData.new()
-       save_data.version = data.get("version", "1.0.0")
-       save_data.save_date = data.get("save_date", "")
-       save_data.game_data = GameData.from_dict(data.get("game_data", {}))
-       save_data.settings = data.get("settings", {})
-       return save_data
-   ```
-
-2. **Save Manager Core**
+2. **Save Manager Implementation**
    ```gdscript
    # scripts/autoload/save_manager.gd
    extends Node
    
-   const SAVE_PATH = "user://saves/"
-   const AUTO_SAVE_INTERVAL = 30.0
+   signal save_completed
+   signal save_failed
+   signal load_completed
+   signal load_failed
    
-   var auto_save_timer: Timer
-   var current_save_data: SaveData
+   const SAVE_FILE_PATH = "user://save_data.json"
+   var save_data: Dictionary = {}
    
    func _ready():
-       setup_auto_save()
-       load_game()
+       print("SaveManager initialized")
    
-   func setup_auto_save():
-       auto_save_timer = Timer.new()
-       auto_save_timer.wait_time = AUTO_SAVE_INTERVAL
-       auto_save_timer.timeout.connect(auto_save)
-       add_child(auto_save_timer)
-       auto_save_timer.start()
+   func save_game():
+       # Implementation details
+       save_completed.emit()
+   
+   func load_game():
+       # Implementation details
+       load_completed.emit()
    ```
 
 #### Afternoon Session (4 hours)
-3. **Save Operations**
-   - Implement save file writing
-   - Create save file validation
-   - Set up save file backup system
-
-4. **Load Operations**
-   - Implement save file reading
-   - Create load error handling
-   - Set up save file migration
-
-### Day 6: Game Data Management
-
-#### Morning Session (4 hours)
-1. **Game Data Implementation**
+3. **UI Manager Implementation**
    ```gdscript
-   # scripts/data/game_data.gd
-   class_name GameData
-   extends Resource
-   
-   @export var player_money: float = 0.0
-   @export var game_time: float = 0.0
-   @export var hot_dogs_made: int = 0
-   @export var hot_dogs_sold: int = 0
-   @export var current_level: int = 1
-   @export var upgrades: Dictionary = {}
-   @export var achievements: Array[String] = []
-   
-   func add_money(amount: float):
-       player_money += amount
-       EventManager.emit_event("money_changed", player_money)
-   
-   func spend_money(amount: float) -> bool:
-       if player_money >= amount:
-           player_money -= amount
-           EventManager.emit_event("money_changed", player_money)
-           return true
-       return false
-   ```
-
-2. **Data Validation System**
-   - Create data integrity checks
-   - Implement data migration
-   - Set up data backup
-
-#### Afternoon Session (4 hours)
-3. **Performance Monitoring**
-   - Set up frame rate monitoring
-   - Implement memory tracking
-   - Create performance logging
-
-4. **Testing Framework Setup**
-   - Set up GUT testing framework
-   - Create base test classes
-   - Implement automated testing
-
-## Phase 1D: Integration and Testing (Day 7)
-
-### Day 7: Final Integration
-
-#### Morning Session (4 hours)
-1. **System Integration**
-   - Connect all autoload systems
-   - Test system interactions
-   - Verify signal connections
-
-2. **Performance Testing**
-   - Run performance benchmarks
-   - Test memory usage
-   - Validate frame rate targets
-
-#### Afternoon Session (4 hours)
-3. **Documentation**
-   - Complete architecture documentation
-   - Create API documentation
-   - Write development guides
-
-4. **Final Testing**
-   - Run full integration tests
-   - Test error scenarios
-   - Validate save/load functionality
-
-## Implementation Notes
-
-### Key Design Decisions
-1. **Autoload Order**: GameManager → EventManager → SaveManager → UIManager
-2. **Event-Driven Architecture**: All systems communicate via events
-3. **Component-Based Design**: Reusable components for UI elements
-4. **Data-Driven Approach**: Game data separated from logic
-
-### Performance Considerations
-- Use object pooling for frequently created objects
-- Implement lazy loading for assets
-- Cache frequently accessed data
-- Monitor memory usage and cleanup
-
-### Testing Strategy
-- Unit tests for all core systems
-- Integration tests for system interactions
-- Performance tests for critical paths
-- Manual testing for UI interactions
-
-### Future Extensibility
-- Architecture supports adding new game systems
-- UI framework can accommodate new screens
-- Save system can handle new data types
-- Event system can support new features
-
-## Godot 4.4 Alignment Improvements
-
-### High Priority Improvements
-1. **Signal Management Enhancement**
-   - Implement proper signal disconnection in `_exit_tree()` methods
-   - Use Godot's built-in signal system more extensively
-   - Add signal cleanup patterns to prevent memory leaks
-
-2. **Resource Lifecycle Management**
-   - Implement `_notification()` methods for proper resource cleanup
-   - Add `NOTIFICATION_PREDELETE` handling for all resources
-   - Ensure proper resource disposal and memory management
-
-3. **Inspector Integration**
-   - Add `@export` annotations for all configurable properties
-   - Use `@export_group` for better organization in inspector
-   - Implement `@export_enum` for type-safe selections
-
-### Medium Priority Improvements
-1. **Performance Optimization**
-   - Use `@onready` for better performance in node initialization
-   - Implement update throttling with delta time
-   - Add performance monitoring from the start
-
-2. **Testing Enhancement**
-   - Set up comprehensive GUT testing framework
-   - Create integration tests for all system interactions
-   - Implement performance regression testing
-
-3. **Documentation Standards**
-   - Add proper GDScript documentation comments
-   - Create architecture documentation templates
-   - Document signal flow and system interactions
-
-### Code Quality Improvements
-1. **Enhanced Event System**
-   ```gdscript
-   # Replace custom EventManager with direct signals
-   signal hot_dog_produced(amount: int)
-   signal money_earned(amount: float)
-   signal upgrade_purchased(upgrade_id: String)
-   
-   # Connect signals in _ready()
-   func _ready():
-       hot_dog_production.hot_dog_produced.connect(_on_hot_dog_produced)
-       sales_system.money_earned.connect(_on_money_earned)
-   ```
-
-2. **Better Resource Management**
-   ```gdscript
-   class_name GameResource
-   extends Resource
-   
-   func _init():
-       # Initialize resource
-       pass
-   
-   func _notification(what: int):
-       if what == NOTIFICATION_PREDELETE:
-           # Clean up before deletion
-           _cleanup()
-   ```
-
-3. **Improved Node Structure**
-   ```gdscript
-   class_name GameSystem
+   # scripts/autoload/ui_manager.gd
    extends Node
    
-   @export var system_name: String = ""
-   @export var is_active: bool = true
+   signal screen_changed(new_screen: String, old_screen: String)
+   signal ui_ready
+   
+   var current_screen: String = ""
+   var ui_stack: Array[String] = []
    
    func _ready():
-       if not is_active:
-           return
-       _initialize_system()
+       print("UIManager initialized")
+       ui_ready.emit()
    
-   func _exit_tree():
-       _cleanup_system()
-   
-   func _initialize_system():
-       # System initialization
-       pass
-   
-   func _cleanup_system():
-       # System cleanup
-       pass
+   func show_screen(screen_name: String):
+       var old_screen = current_screen
+       current_screen = screen_name
+       ui_stack.append(screen_name)
+       screen_changed.emit(screen_name, old_screen)
    ```
 
-### Risk Mitigation Updates
-1. **Memory Leak Prevention**
-   - Implement consistent signal disconnection patterns
-   - Add proper resource cleanup in all systems
-   - Use object pooling for frequently created objects
+4. **Main Scene Structure**
+   ```gdscript
+   # scripts/scenes/main_scene.gd
+   extends Control
+   
+   # UI references
+   @onready var game_ui: Control = $UI/GameUI
+   @onready var menu_ui: Control = $UI/MenuUI
+   
+   # System references
+   @onready var production_system: Node = $Systems/ProductionSystem
+   @onready var economy_system: Node = $Systems/EconomySystem
+   
+   func _ready():
+       # Connect UI signals
+       game_ui.add_hot_dog_requested.connect(_on_add_hot_dog_requested)
+       game_ui.pause_game_requested.connect(_on_pause_game_requested)
+       game_ui.save_game_requested.connect(_on_save_game_requested)
+       game_ui.menu_requested.connect(_on_menu_requested)
+       
+       # Connect system signals
+       production_system.hot_dog_produced.connect(_on_hot_dog_produced)
+       economy_system.money_changed.connect(_on_money_changed)
+   
+   func _on_add_hot_dog_requested():
+       production_system.add_to_queue()
+   
+   func _on_hot_dog_produced():
+       economy_system.sell_hot_dog()
+   ```
 
-2. **Performance Monitoring**
-   - Add real-time performance monitoring
-   - Implement adaptive quality settings
-   - Monitor memory usage and cleanup
+### Day 3: Scene Organization
 
-3. **Code Maintainability**
-   - Use consistent naming conventions
-   - Implement proper error handling
-   - Add comprehensive logging and debugging 
+#### Morning Session (4 hours)
+1. **Main Scene Setup**
+   ```gdscript
+   # scenes/main/main_scene.tscn
+   [gd_scene load_steps=X format=3 uid="uid://..."]
+   
+   [node name="MainScene" type="Control"]
+   unique_name_in_owner = true
+   script = ExtResource("1_0x0x0")
+   
+   [node name="UI" type="Control" parent="."]
+   
+   [node name="GameUI" parent="UI" instance=ExtResource("2_0x0x0")]
+   
+   [node name="MenuUI" parent="UI" instance=ExtResource("3_0x0x0")]
+   
+   [node name="Systems" type="Node" parent="."]
+   
+   [node name="ProductionSystem" parent="Systems" instance=ExtResource("4_0x0x0")]
+   unique_name_in_owner = true
+   
+   [node name="EconomySystem" parent="Systems" instance=ExtResource("5_0x0x0")]
+   unique_name_in_owner = true
+   ```
+
+2. **UI Component Implementation**
+   ```gdscript
+   # scripts/ui/game_ui.gd
+   extends Control
+   
+   # UI emits signals, main scene listens
+   signal add_hot_dog_requested
+   signal pause_game_requested
+   signal save_game_requested
+   signal menu_requested
+   
+   @onready var money_label: Label = $TopBar/MoneyLabel
+   @onready var add_hot_dog_button: Button = $GameArea/AddHotDogButton
+   
+   func _ready():
+       add_hot_dog_button.pressed.connect(_on_add_hot_dog_pressed)
+   
+   func _on_add_hot_dog_pressed():
+       add_hot_dog_requested.emit()
+   
+   func update_money_display(amount: float):
+       money_label.text = "Money: $%.2f" % amount
+   ```
+
+#### Afternoon Session (4 hours)
+3. **System Implementation**
+   ```gdscript
+   # scripts/systems/production_system.gd
+   extends Node
+   
+   signal hot_dog_produced
+   signal production_started
+   signal production_stopped
+   
+   var is_producing: bool = false
+   var current_queue_size: int = 0
+   
+   func add_to_queue():
+       current_queue_size += 1
+       if not is_producing:
+           start_production()
+   
+   func start_production():
+       is_producing = true
+       production_started.emit()
+   
+   func _on_production_timer_timeout():
+       if current_queue_size > 0:
+           current_queue_size -= 1
+           hot_dog_produced.emit()
+   ```
+
+4. **Signal Connection Patterns**
+   ```gdscript
+   # Proper signal connection in main scene
+   func _ready():
+       # Connect UI signals (UI → Main Scene)
+       game_ui.add_hot_dog_requested.connect(_on_add_hot_dog_requested)
+       
+       # Connect system signals (Systems → Main Scene)
+       production_system.hot_dog_produced.connect(_on_hot_dog_produced)
+       
+       # Connect autoload signals (Autoloads → Main Scene)
+       UIManager.screen_changed.connect(_on_screen_changed)
+   ```
+
+### Day 4: Testing and Validation
+
+#### Morning Session (4 hours)
+1. **Signal Testing**
+   ```gdscript
+   # tests/unit/test_signal_communication.gd
+   extends GutTest
+   
+   func test_ui_emits_signals():
+       var game_ui = preload("res://scenes/ui/game_ui.tscn").instantiate()
+       add_child_autofree(game_ui)
+       
+       var signal_emitted = false
+       game_ui.add_hot_dog_requested.connect(func(): signal_emitted = true)
+       
+       game_ui._on_add_hot_dog_pressed()
+       
+       assert_true(signal_emitted)
+   ```
+
+2. **Integration Testing**
+   ```gdscript
+   # tests/integration/test_production_flow.gd
+   extends GutTest
+   
+   func test_hot_dog_production_flow():
+       var main_scene = preload("res://scenes/main/main_scene.tscn").instantiate()
+       add_child_autofree(main_scene)
+       
+       # Simulate UI interaction
+       main_scene._on_add_hot_dog_requested()
+       
+       # Verify system response
+       assert_eq(main_scene.production_system.current_queue_size, 1)
+   ```
+
+#### Afternoon Session (4 hours)
+3. **Performance Testing**
+   - Test signal emission frequency
+   - Monitor memory usage
+   - Validate cleanup patterns
+
+4. **Documentation**
+   - Update architecture documentation
+   - Create signal flow diagrams
+   - Document unique name usage
+
+## Key Design Decisions
+
+### 1. Signal-Based Communication
+- **UI Components**: Emit signals for user actions
+- **Systems**: Emit signals for state changes
+- **Main Scene**: Listens to all signals and coordinates
+- **Autoloads**: Provide global services and emit global signals
+
+### 2. Unique Name Identifiers
+- **Main Scene**: `%MainScene` for global access
+- **Systems**: `%ProductionSystem`, `%EconomySystem` for direct access
+- **UI Components**: Use `%` identifiers when needed across scenes
+
+### 3. Proper Cleanup
+- **Signal Disconnection**: All systems disconnect signals in `_exit_tree()`
+- **Memory Management**: Proper resource cleanup
+- **Node Removal**: Clean removal from scene tree
+
+### 4. Testing Strategy
+- **Unit Tests**: Test individual signal emissions
+- **Integration Tests**: Test complete signal flows
+- **Performance Tests**: Monitor signal frequency and memory usage
+
+## Performance Considerations
+- Use signal batching for high-frequency updates
+- Implement signal throttling where appropriate
+- Monitor signal connection/disconnection overhead
+- Cache frequently accessed node references
+
+## Future Extensibility
+- Architecture supports adding new UI components
+- Systems can be added without modifying existing code
+- Signal-based communication enables loose coupling
+- Unique names provide clean access patterns
+
+## Godot 4.4 Best Practices Integration
+
+### Signal Management
+- Use typed signals for better type safety
+- Implement proper signal disconnection patterns
+- Document all signals with clear parameter descriptions
+- Use signal batching for performance optimization
+
+### Node Access Patterns
+- Prefer `%` identifiers over `get_parent()` chains
+- Set `unique_name_in_owner = true` for global access
+- Use `@onready` for better performance
+- Implement proper node lifecycle management
+
+### Resource Management
+- Use `@export` annotations for inspector integration
+- Implement proper resource cleanup
+- Use `Resource` classes for data structures
+- Follow Godot's resource lifecycle patterns 
