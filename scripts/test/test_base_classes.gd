@@ -137,7 +137,7 @@ func _test_utilities() -> void:
 	# Test array utilities
 	var test_array = [1, 2, 3, 4, 5]
 	var shuffled = GameUtils.shuffle_array(test_array)
-	print("Shuffled array: %s" % shuffled)
+	print("Shuffled array: %s" % str(shuffled))
 	
 	var random_element = GameUtils.get_random_element(test_array)
 	print("Random element: %s" % random_element)

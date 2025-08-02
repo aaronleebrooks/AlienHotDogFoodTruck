@@ -92,10 +92,6 @@ func disable_interaction() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("%s: Interaction disabled" % component_name)
 
-func focus_component() -> void:
-	"""Focus the component"""
-	grab_focus()
-
 func _on_focus_entered() -> void:
 	"""Handle focus entered"""
 	is_focused = true
