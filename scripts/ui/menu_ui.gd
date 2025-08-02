@@ -8,6 +8,12 @@ extends Control
 @onready var settings_button: Button = $VBoxContainer/SettingsButton
 @onready var quit_button: Button = $VBoxContainer/QuitButton
 
+# Signals - UI emits these, main scene listens
+signal start_game_requested
+signal continue_game_requested
+signal settings_requested
+signal quit_game_requested
+
 func _ready() -> void:
 	"""Initialize the menu UI"""
 	print("MenuUI: Initialized")
@@ -28,22 +34,19 @@ func _update_continue_button() -> void:
 func _on_start_pressed() -> void:
 	"""Handle start game button press"""
 	print("MenuUI: Start game pressed")
-	GameManager.start_game()
-	UIManager.show_screen("game")
+	start_game_requested.emit()
 
 func _on_continue_pressed() -> void:
 	"""Handle continue game button press"""
 	print("MenuUI: Continue game pressed")
-	SaveManager.load_game()
-	GameManager.start_game()
-	UIManager.show_screen("game")
+	continue_game_requested.emit()
 
 func _on_settings_pressed() -> void:
 	"""Handle settings button press"""
 	print("MenuUI: Settings pressed")
-	UIManager.show_screen("settings")
+	settings_requested.emit()
 
 func _on_quit_pressed() -> void:
 	"""Handle quit button press"""
 	print("MenuUI: Quit pressed")
-	get_tree().quit() 
+	quit_game_requested.emit() 

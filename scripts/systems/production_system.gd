@@ -103,4 +103,15 @@ func get_production_stats() -> Dictionary:
 		"max_queue_size": max_queue_size,
 		"total_produced": total_produced,
 		"production_rate": production_rate
-	} 
+	}
+
+func _exit_tree() -> void:
+	"""Clean up when system is removed"""
+	# Disconnect all signals to prevent memory leaks
+	if production_timer:
+		production_timer.timeout.disconnect(_on_production_timer_timeout)
+	
+	if GameManager:
+		GameManager.game_started.disconnect(_on_game_started)
+		GameManager.game_paused.disconnect(_on_game_paused)
+		GameManager.game_resumed.disconnect(_on_game_resumed) 

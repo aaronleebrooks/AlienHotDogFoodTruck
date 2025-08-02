@@ -107,4 +107,21 @@ func _connect_to_systems() -> void:
 func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""
 	print("GameUI: Add hot dog pressed")
-	add_hot_dog_requested.emit() 
+	add_hot_dog_requested.emit()
+
+func _exit_tree() -> void:
+	"""Clean up when UI is removed"""
+	# Disconnect all signals to prevent memory leaks
+	if GameManager:
+		GameManager.game_started.disconnect(_on_game_started)
+		GameManager.game_paused.disconnect(_on_game_paused)
+		GameManager.game_resumed.disconnect(_on_game_resumed)
+	
+	if SaveManager:
+		SaveManager.save_completed.disconnect(_on_save_completed)
+		SaveManager.save_failed.disconnect(_on_save_failed)
+	
+	# Disconnect from systems (using % identifiers)
+	var economy_system = %EconomySystem
+	if economy_system:
+		economy_system.money_changed.disconnect(_on_money_changed) 

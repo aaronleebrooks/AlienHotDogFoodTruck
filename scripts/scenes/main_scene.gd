@@ -39,8 +39,38 @@ func _ready() -> void:
 	game_ui.save_game_requested.connect(_on_save_game_requested)
 	game_ui.menu_requested.connect(_on_menu_requested)
 	
+	# Connect MenuUI signals
+	menu_ui.start_game_requested.connect(_on_start_game_requested)
+	menu_ui.continue_game_requested.connect(_on_continue_game_requested)
+	menu_ui.settings_requested.connect(_on_settings_requested)
+	menu_ui.quit_game_requested.connect(_on_quit_game_requested)
+	
 	# Show initial UI (menu)
 	show_ui("menu")
+
+func _exit_tree() -> void:
+	"""Clean up when scene is removed"""
+	# Disconnect all signals to prevent memory leaks
+	if UIManager:
+		UIManager.screen_changed.disconnect(_on_screen_changed)
+	
+	if production_system:
+		production_system.hot_dog_produced.disconnect(_on_hot_dog_produced)
+	
+	if economy_system:
+		economy_system.money_changed.disconnect(_on_money_changed)
+	
+	if game_ui:
+		game_ui.add_hot_dog_requested.disconnect(_on_add_hot_dog_requested)
+		game_ui.pause_game_requested.disconnect(_on_pause_game_requested)
+		game_ui.save_game_requested.disconnect(_on_save_game_requested)
+		game_ui.menu_requested.disconnect(_on_menu_requested)
+	
+	if menu_ui:
+		menu_ui.start_game_requested.disconnect(_on_start_game_requested)
+		menu_ui.continue_game_requested.disconnect(_on_continue_game_requested)
+		menu_ui.settings_requested.disconnect(_on_settings_requested)
+		menu_ui.quit_game_requested.disconnect(_on_quit_game_requested)
 
 func show_ui(ui_name: String) -> void:
 	"""Show a specific UI screen"""
@@ -79,6 +109,54 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
 	print("MainScene: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
 
+# Signal handlers for MenuUI
+func _on_start_game_requested() -> void:
+	"""Handle start game request from menu"""
+	print("MainScene: Start game requested")
+	GameManager.start_game()
+	UIManager.show_screen("game")
+
+func _on_continue_game_requested() -> void:
+	"""Handle continue game request from menu"""
+	print("MainScene: Continue game requested")
+	SaveManager.load_game()
+	GameManager.start_game()
+	UIManager.show_screen("game")
+
+func _on_settings_requested() -> void:
+	"""Handle settings request from menu"""
+	print("MainScene: Settings requested")
+	UIManager.show_screen("settings")
+
+func _on_quit_game_requested() -> void:
+	"""Handle quit game request from menu"""
+	print("MainScene: Quit game requested")
+	get_tree().quit()
+
+# Signal handlers for GameUI
+func _on_add_hot_dog_requested() -> void:
+	"""Handle add hot dog request from UI"""
+	print("MainScene: Add hot dog requested")
+	production_system.add_to_queue()
+
+func _on_pause_game_requested() -> void:
+	"""Handle pause game request from UI"""
+	print("MainScene: Pause game requested")
+	if GameManager.is_game_running:
+		GameManager.pause_game()
+	else:
+		GameManager.resume_game()
+
+func _on_save_game_requested() -> void:
+	"""Handle save game request from UI"""
+	print("MainScene: Save game requested")
+	SaveManager.save_game()
+
+func _on_menu_requested() -> void:
+	"""Handle menu request from UI"""
+	print("MainScene: Menu requested")
+	UIManager.show_screen("menu")
+
 func get_production_system() -> Node:
 	"""Get reference to production system"""
 	if production_system:
@@ -104,27 +182,4 @@ func _print_scene_tree(node: Node, depth: int) -> void:
 	print(node_info)
 	
 	for child in node.get_children():
-		_print_scene_tree(child, depth + 1)
-
-func _on_add_hot_dog_requested() -> void:
-	"""Handle add hot dog request from UI"""
-	print("MainScene: Add hot dog requested")
-	production_system.add_to_queue()
-
-func _on_pause_game_requested() -> void:
-	"""Handle pause game request from UI"""
-	print("MainScene: Pause game requested")
-	if GameManager.is_game_running:
-		GameManager.pause_game()
-	else:
-		GameManager.resume_game()
-
-func _on_save_game_requested() -> void:
-	"""Handle save game request from UI"""
-	print("MainScene: Save game requested")
-	SaveManager.save_game()
-
-func _on_menu_requested() -> void:
-	"""Handle menu request from UI"""
-	print("MainScene: Menu requested")
-	UIManager.show_screen("menu") 
+		_print_scene_tree(child, depth + 1) 
