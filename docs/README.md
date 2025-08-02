@@ -16,7 +16,6 @@ Core architectural decisions and system design documentation:
 Practical guides for developers:
 - **`coding_standards.md`** - Coding standards and naming conventions
 - **`development_environment_setup.md`** - Development environment setup guide
-- **`README.md`** - Project plan overview and phase summaries
 
 ### 📁 API Documentation (`api/`)
 API documentation for systems and components:
@@ -37,9 +36,9 @@ API documentation for systems and components:
 3. Understand the overall structure in `architecture/project_structure.md`
 
 ### For Project Planning
-1. Review `guides/README.md` for phase overviews
-2. Check specific phase folders in the main project directory
-3. Reference implementation plans and checklists
+1. Review the Project Phases section below for phase overviews
+2. Check specific phase folders in the main project directory (`Project Plan/`)
+3. Reference implementation plans and checklists in each phase folder
 
 ## Project Phases
 
