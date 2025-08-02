@@ -4,8 +4,8 @@ class_name TestResources
 ## Test script to verify resource classes functionality
 
 # Test instances
-var test_config: GameConfig
-var test_hot_dog: HotDog
+var test_config: Resource
+var test_hot_dog: Resource
 
 func _ready() -> void:
 	print("TestResources: Starting resource tests...")
@@ -20,7 +20,7 @@ func _test_game_config() -> void:
 	print("\n--- Testing GameConfig ---")
 	
 	# Create test config
-	test_config = GameConfig.new()
+	test_config = preload("res://scripts/resources/game_config.gd").new()
 	test_config.game_name = "Test Hot Dog Game"
 	test_config.starting_money = 200.0
 	test_config.hot_dog_price = 7.5
@@ -54,7 +54,7 @@ func _test_hot_dog() -> void:
 	print("\n--- Testing HotDog ---")
 	
 	# Create test hot dog
-	test_hot_dog = HotDog.new()
+	test_hot_dog = preload("res://scripts/resources/hot_dog.gd").new()
 	test_hot_dog.hot_dog_name = "Premium Bacon Dog"
 	test_hot_dog.price = 8.0
 	test_hot_dog.quality = 0.9

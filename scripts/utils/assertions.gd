@@ -147,9 +147,12 @@ static func assert_type(value, expected_type: Script, message: String = "Type as
 	if not _assertions_enabled:
 		return
 	
-	if not value is expected_type:
-		var actual_type = typeof(value)
-		var type_message = "%s (expected %s, got %s)" % [message, expected_type.get_class(), actual_type]
+	# Use get_class() for type checking instead of 'is' operator
+	var value_class = value.get_class() if value else "null"
+	var expected_class = expected_type.get_class()
+	
+	if value_class != expected_class:
+		var type_message = "%s (expected %s, got %s)" % [message, expected_class, value_class]
 		_handle_assertion_failure("assert_type", type_message, context)
 
 ## assert_equal

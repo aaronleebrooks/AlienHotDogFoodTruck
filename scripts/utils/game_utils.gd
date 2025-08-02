@@ -328,7 +328,8 @@ static func deep_copy_dictionary(dict: Dictionary) -> Dictionary:
 ## @since: 1.0.0
 static func find_node_by_type(node: Node, target_type: Script) -> Node:
 	"""Find a node of a specific type in the scene tree"""
-	if node is target_type:
+	# Use get_class() for type checking instead of 'is' operator
+	if node.get_class() == target_type.get_class():
 		return node
 	
 	for child in node.get_children():
@@ -362,7 +363,8 @@ static func find_all_nodes_by_type(node: Node, target_type: Script) -> Array[Nod
 	"""Find all nodes of a specific type in the scene tree"""
 	var result: Array[Node] = []
 	
-	if node is target_type:
+	# Use get_class() for type checking instead of 'is' operator
+	if node.get_class() == target_type.get_class():
 		result.append(node)
 	
 	for child in node.get_children():
