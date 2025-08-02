@@ -9,6 +9,10 @@ extends Control
 @onready var settings_ui: Control = $UI/SettingsUI
 @onready var loading_ui: Control = $UI/LoadingUI
 
+# System references
+@onready var production_system: Node = $Systems/ProductionSystem
+@onready var economy_system: Node = $Systems/EconomySystem
+
 # Current active UI
 var current_ui: Control
 
@@ -18,6 +22,10 @@ func _ready() -> void:
 	
 	# Connect UIManager signals
 	UIManager.screen_changed.connect(_on_screen_changed)
+	
+	# Connect system signals
+	production_system.hot_dog_produced.connect(_on_hot_dog_produced)
+	economy_system.money_changed.connect(_on_money_changed)
 	
 	# Show initial UI (menu)
 	show_ui("menu")
@@ -48,4 +56,13 @@ func show_ui(ui_name: String) -> void:
 func _on_screen_changed(new_screen: String, old_screen: String) -> void:
 	"""Handle screen changes from UIManager"""
 	print("MainScene: Screen changed from '%s' to '%s'" % [old_screen, new_screen])
-	show_ui(new_screen) 
+	show_ui(new_screen)
+
+func _on_hot_dog_produced() -> void:
+	"""Handle hot dog production"""
+	print("MainScene: Hot dog produced")
+	economy_system.sell_hot_dog()
+
+func _on_money_changed(new_amount: float, change: float) -> void:
+	"""Handle money changes"""
+	print("MainScene: Money changed by $%.2f. New total: $%.2f" % [change, new_amount]) 

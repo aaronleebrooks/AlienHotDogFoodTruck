@@ -30,7 +30,7 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 ### 3. Scene Organization
 - [x] Create main scene structure
 - [x] Set up UI scene hierarchy
-- [ ] Create system scenes
+- [x] Create system scenes
 - [ ] Organize component scenes
 - [ ] Set up scene dependencies
 

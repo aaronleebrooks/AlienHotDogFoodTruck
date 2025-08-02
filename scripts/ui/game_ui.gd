@@ -27,6 +27,9 @@ func _ready() -> void:
 	# Connect SaveManager signals
 	SaveManager.save_completed.connect(_on_save_completed)
 	SaveManager.save_failed.connect(_on_save_failed)
+	
+	# Connect EconomySystem signals (accessed through main scene)
+	get_parent().get_parent().get_node("Systems/EconomySystem").money_changed.connect(_on_money_changed)
 
 func _process(_delta: float) -> void:
 	"""Update UI elements"""
@@ -74,4 +77,9 @@ func _on_save_completed() -> void:
 
 func _on_save_failed() -> void:
 	"""Handle save failed signal"""
-	print("GameUI: Save failed") 
+	print("GameUI: Save failed")
+
+func _on_money_changed(new_amount: float, change: float) -> void:
+	"""Handle money changes"""
+	print("GameUI: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
+	money_label.text = "Money: $%.2f" % new_amount 
