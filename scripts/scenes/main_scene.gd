@@ -161,6 +161,9 @@ func _on_start_game_requested() -> void:
 	print("MainScene: Start game requested")
 	GameManager.start_game()
 	UIManager.show_screen("game")
+	
+	# Refresh UI to show initial game state
+	_refresh_ui_after_load()
 
 func _on_continue_game_requested() -> void:
 	"""Handle continue game request from menu"""

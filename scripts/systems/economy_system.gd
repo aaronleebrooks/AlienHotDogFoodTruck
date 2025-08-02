@@ -32,6 +32,9 @@ func _ready() -> void:
 	# Set starting money
 	current_money = starting_money
 	print("EconomySystem: Starting money: $%.2f" % current_money)
+	
+	# Emit initial money value to update UI
+	call_deferred("_emit_initial_money")
 
 func _initialize_system() -> void:
 	"""Override BaseSystem initialization"""
@@ -97,6 +100,12 @@ func get_economy_stats() -> Dictionary:
 		"transactions_count": transactions_count,
 		"hot_dog_price": hot_dog_price
 	}
+
+func _emit_initial_money() -> void:
+	"""Emit initial money value to update UI"""
+	if is_system_ready():
+		money_changed.emit(current_money, 0.0)
+		print("EconomySystem: Emitted initial money: $%.2f" % current_money)
 
 func cleanup() -> void:
 	"""Override BaseSystem cleanup"""
