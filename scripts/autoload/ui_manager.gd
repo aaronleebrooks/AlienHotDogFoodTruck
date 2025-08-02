@@ -1,5 +1,4 @@
 extends Node
-class_name UIManager
 
 ## Simple UIManager autoload for basic UI management
 

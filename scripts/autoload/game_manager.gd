@@ -1,5 +1,4 @@
 extends Node
-class_name GameManager
 
 ## Simple GameManager autoload for basic game state management
 

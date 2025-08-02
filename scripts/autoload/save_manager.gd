@@ -1,5 +1,4 @@
 extends Node
-class_name SaveManager
 
 ## Simple SaveManager autoload for basic save/load functionality
 
