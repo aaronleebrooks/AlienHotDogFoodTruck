@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
+
+[ext_resource type="Script" path="res://scripts/components/custom_button.gd" id="1_0a1b2"]
+
+[node name="CustomButton" type="Button"]
+custom_minimum_size = Vector2(120, 40)
+script = ExtResource("1_0a1b2")
+button_style = "default"
+button_id = ""
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Button"
+horizontal_alignment = 1
+vertical_alignment = 1 
