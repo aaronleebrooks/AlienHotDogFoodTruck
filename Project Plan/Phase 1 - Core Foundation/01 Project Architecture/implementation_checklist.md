@@ -21,7 +21,7 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Set up test scripts folder
 
 ### 2. Autoload Configuration
-- [ ] Configure GameManager as autoload
+- [x] Configure GameManager as autoload
 - [ ] Configure SaveManager as autoload
 - [ ] Configure UIManager as autoload
 - [ ] Set proper autoload order
