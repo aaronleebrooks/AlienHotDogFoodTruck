@@ -120,6 +120,28 @@ func _on_save_load_completed() -> void:
 	SaveManager.restore_game_state()
 	GameManager.start_game()
 	UIManager.show_screen("game")
+	
+	# Refresh UI to show restored state
+	_refresh_ui_after_load()
+
+func _refresh_ui_after_load() -> void:
+	"""Refresh UI elements to show restored game state"""
+	print("MainScene: Refreshing UI after load")
+	
+	# Update money display
+	var current_money = economy_system.get_current_money()
+	game_ui.update_money_display(current_money)
+	print("MainScene: Updated money display to $%.2f" % current_money)
+	
+	# Update production display
+	var production_stats = production_system.get_production_stats()
+	game_ui.update_production_info(production_stats["total_produced"])
+	game_ui.update_queue_info(production_stats["current_queue_size"], production_stats["max_queue_size"])
+	print("MainScene: Updated production display - Produced: %d, Queue: %d/%d" % [
+		production_stats["total_produced"], 
+		production_stats["current_queue_size"], 
+		production_stats["max_queue_size"]
+	])
 
 func _on_save_load_failed() -> void:
 	"""Handle save/load failure"""

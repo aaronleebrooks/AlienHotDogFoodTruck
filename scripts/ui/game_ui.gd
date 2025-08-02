@@ -90,6 +90,21 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 	print("GameUI: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
 	money_label.text = "Money: $%.2f" % new_amount
 
+func update_money_display(amount: float) -> void:
+	"""Update money display (for save/load)"""
+	money_label.text = "Money: $%.2f" % amount
+	print("GameUI: Money display updated to $%.2f" % amount)
+
+func update_production_info(produced: int) -> void:
+	"""Update production information display"""
+	# Note: This would need a production info label in the UI
+	print("GameUI: Production info updated - Produced: %d" % produced)
+
+func update_queue_info(current: int, max_size: int) -> void:
+	"""Update queue information display"""
+	# Note: This would need a queue info label in the UI
+	print("GameUI: Queue info updated - %d/%d" % [current, max_size])
+
 func _connect_to_systems() -> void:
 	"""Connect to systems after they're ready"""
 	var economy_system = %EconomySystem
