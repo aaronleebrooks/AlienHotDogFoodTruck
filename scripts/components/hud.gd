@@ -21,6 +21,8 @@ signal add_hot_dog_requested
 func _ready() -> void:
 	"""Initialize the HUD"""
 	connect_signals()
+	# Make HUD non-blocking for input (allow clicks to pass through)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("HUD: Initialized")
 
 func connect_signals() -> void:

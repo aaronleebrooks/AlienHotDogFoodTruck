@@ -110,6 +110,13 @@ func _on_test_hud_pressed() -> void:
 			hud_instance.update_production_info(5)
 			hud_instance.update_queue_info(3, 10)
 			print("TestComponents: HUD instantiated successfully")
+			
+			# Auto-cleanup after 5 seconds
+			await get_tree().create_timer(5.0).timeout
+			if hud_instance and is_instance_valid(hud_instance):
+				print("TestComponents: Auto-cleaning up HUD")
+				hud_instance.queue_free()
+				hud_instance = null
 		else:
 			print("TestComponents: Error - Failed to instantiate HUD")
 	else:
