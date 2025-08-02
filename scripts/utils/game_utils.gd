@@ -24,9 +24,9 @@ static func format_money(amount: float) -> String:
 
 static func format_time(seconds: float) -> String:
 	"""Format time in seconds to readable format"""
-	var minutes = int(seconds) / 60
+	var minutes = int(seconds) / 60.0
 	var secs = int(seconds) % 60
-	return "%02d:%02d" % [minutes, secs]
+	return "%02d:%02d" % [int(minutes), secs]
 
 static func format_number(number: int) -> String:
 	"""Format large numbers with commas"""
@@ -165,8 +165,8 @@ static func is_valid_email(email: String) -> bool:
 static func is_valid_filename(filename: String) -> bool:
 	"""Check if filename is valid"""
 	var invalid_chars = ["<", ">", ":", "\"", "|", "?", "*", "\\", "/"]
-	for char in invalid_chars:
-		if char in filename:
+	for invalid_char in invalid_chars:
+		if invalid_char in filename:
 			return false
 	return true
 

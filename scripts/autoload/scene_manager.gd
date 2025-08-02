@@ -80,7 +80,9 @@ func unload_scene(scene_name: String) -> void:
 
 func change_scene(scene_name: String) -> void:
 	"""Change to a new scene"""
-	var old_scene_name = current_scene.name if current_scene else ""
+	var old_scene_name = ""
+	if current_scene:
+		old_scene_name = current_scene.name
 	
 	scene_transition_started.emit(old_scene_name, scene_name)
 	
@@ -125,7 +127,9 @@ func is_scene_loaded(scene_name: String) -> bool:
 
 func get_current_scene_name() -> String:
 	"""Get the name of the current scene"""
-	return current_scene.name if current_scene else ""
+	if current_scene:
+		return current_scene.name
+	return ""
 
 func get_scene_stack() -> Array[String]:
 	"""Get the current scene stack"""

@@ -100,8 +100,8 @@ static func validate_signal(signal_obj: Object, signal_name: String) -> bool:
 		return false
 	return signal_obj.has_signal(signal_name)
 
-static func get_signal_list(signal_obj: Object) -> Array[String]:
-	"""Get list of all signals on an object"""
+static func get_signal_names(signal_obj: Object) -> Array[String]:
+	"""Get list of signal names on an object"""
 	var signals: Array[String] = []
 	if signal_obj:
 		for signal_info in signal_obj.get_signal_list():
