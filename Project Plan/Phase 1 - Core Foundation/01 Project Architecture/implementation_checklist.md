@@ -7,7 +7,7 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Review Godot 4.x best practices and conventions
 - [x] Define coding standards and naming conventions
 - [x] Plan folder structure and organization
-- [ ] Set up version control workflow
+- [x] Set up version control workflow
 - [ ] Create development environment setup guide
 
 ## Core Architecture Setup
