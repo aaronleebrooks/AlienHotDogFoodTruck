@@ -1,4 +1,4 @@
-extends Node
+extends BaseSystem
 
 ## Economy system for managing money and transactions
 
@@ -23,15 +23,25 @@ signal insufficient_funds(required: float, available: float)
 
 func _ready() -> void:
 	"""Initialize the economy system"""
-	print("EconomySystem: Initialized")
+	# Set system name for BaseSystem
+	system_name = "EconomySystem"
+	
+	# Call parent initialization
+	super._ready()
 	
 	# Set starting money
 	current_money = starting_money
 	print("EconomySystem: Starting money: $%.2f" % current_money)
 
+func _initialize_system() -> void:
+	"""Override BaseSystem initialization"""
+	print("EconomySystem: Initializing economy system")
+	# Call parent initialization
+	super._initialize_system()
+
 func add_money(amount: float, description: String = "") -> void:
 	"""Add money to the economy"""
-	if amount > 0:
+	if amount > 0 and is_system_ready():
 		current_money += amount
 		total_earned += amount
 		transactions_count += 1
@@ -42,7 +52,7 @@ func add_money(amount: float, description: String = "") -> void:
 
 func spend_money(amount: float, description: String = "") -> bool:
 	"""Spend money from the economy"""
-	if amount <= 0:
+	if amount <= 0 or not is_system_ready():
 		return false
 		
 	if current_money >= amount:
@@ -61,7 +71,7 @@ func spend_money(amount: float, description: String = "") -> bool:
 
 func can_afford(amount: float) -> bool:
 	"""Check if we can afford a purchase"""
-	return current_money >= amount
+	return current_money >= amount and is_system_ready()
 
 func sell_hot_dog() -> void:
 	"""Sell a hot dog"""
@@ -86,4 +96,14 @@ func get_economy_stats() -> Dictionary:
 		"total_spent": total_spent,
 		"transactions_count": transactions_count,
 		"hot_dog_price": hot_dog_price
-	} 
+	}
+
+func cleanup() -> void:
+	"""Override BaseSystem cleanup"""
+	print("EconomySystem: Cleaning up economy system")
+	# Call parent cleanup
+	super.cleanup()
+
+func _exit_tree() -> void:
+	"""Clean up when system is removed"""
+	cleanup() 
