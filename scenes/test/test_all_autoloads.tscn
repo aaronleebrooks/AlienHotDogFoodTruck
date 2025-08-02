@@ -1,0 +1,120 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
+
+[ext_resource type="Script" path="res://scripts/test/test_all_autoloads.gd" id="1_0x0x0"]
+
+[node name="TestAllAutoloads" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_0x0x0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -200.0
+offset_right = 150.0
+offset_bottom = 200.0
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "All Autoloads Test"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="GameManagerSection" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="GameManagerLabel" type="Label" parent="VBoxContainer/GameManagerSection"]
+layout_mode = 2
+text = "GameManager:"
+horizontal_alignment = 1
+
+[node name="GameTimeLabel" type="Label" parent="VBoxContainer/GameManagerSection"]
+layout_mode = 2
+text = "Time: 0.0s"
+horizontal_alignment = 1
+
+[node name="GameButtons" type="HBoxContainer" parent="VBoxContainer/GameManagerSection"]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="VBoxContainer/GameManagerSection/GameButtons"]
+layout_mode = 2
+text = "Start"
+
+[node name="PauseButton" type="Button" parent="VBoxContainer/GameManagerSection/GameButtons"]
+layout_mode = 2
+text = "Pause"
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer/GameManagerSection/GameButtons"]
+layout_mode = 2
+text = "Resume"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveManagerSection" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveManagerLabel" type="Label" parent="VBoxContainer/SaveManagerSection"]
+layout_mode = 2
+text = "SaveManager:"
+horizontal_alignment = 1
+
+[node name="SaveStatusLabel" type="Label" parent="VBoxContainer/SaveManagerSection"]
+layout_mode = 2
+text = "Status: No save file"
+horizontal_alignment = 1
+
+[node name="SaveButtons" type="HBoxContainer" parent="VBoxContainer/SaveManagerSection"]
+layout_mode = 2
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/SaveManagerSection/SaveButtons"]
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/SaveManagerSection/SaveButtons"]
+layout_mode = 2
+text = "Load"
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="UIManagerSection" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="UIManagerLabel" type="Label" parent="VBoxContainer/UIManagerSection"]
+layout_mode = 2
+text = "UIManager:"
+horizontal_alignment = 1
+
+[node name="CurrentScreenLabel" type="Label" parent="VBoxContainer/UIManagerSection"]
+layout_mode = 2
+text = "Screen: None"
+horizontal_alignment = 1
+
+[node name="UIButtons" type="HBoxContainer" parent="VBoxContainer/UIManagerSection"]
+layout_mode = 2
+
+[node name="MenuButton" type="Button" parent="VBoxContainer/UIManagerSection/UIButtons"]
+layout_mode = 2
+text = "Menu"
+
+[node name="GameButton" type="Button" parent="VBoxContainer/UIManagerSection/UIButtons"]
+layout_mode = 2
+text = "Game"
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer/UIManagerSection/UIButtons"]
+layout_mode = 2
+text = "Settings"
+
+[node name="BackButton" type="Button" parent="VBoxContainer/UIManagerSection/UIButtons"]
+layout_mode = 2
+text = "Back" 
