@@ -38,17 +38,17 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Create base classes for common functionality
 - [x] Set up inheritance hierarchy
 - [x] Create utility functions
-- [ ] Set up signal connections
-- [ ] Create resource classes
+- [x] Set up signal connections
+- [x] Create resource classes
 
 ## Coding Standards Implementation
 
 ### 1. Naming Conventions
-- [ ] Define class naming (PascalCase)
-- [ ] Define variable naming (snake_case)
-- [ ] Define constant naming (UPPER_SNAKE_CASE)
-- [ ] Define function naming (snake_case)
-- [ ] Define signal naming (snake_case)
+- [x] Define class naming (PascalCase)
+- [x] Define variable naming (snake_case)
+- [x] Define constant naming (UPPER_SNAKE_CASE)
+- [x] Define function naming (snake_case)
+- [x] Define signal naming (snake_case)
 
 ### 2. Code Documentation
 - [ ] Set up GDScript documentation format
