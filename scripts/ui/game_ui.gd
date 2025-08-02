@@ -32,7 +32,12 @@ func _ready() -> void:
 	
 	# Connect EconomySystem signals (accessed through main scene)
 	var main_scene = get_parent().get_parent()
-	main_scene.get_economy_system().money_changed.connect(_on_money_changed)
+	var economy_system = main_scene.get_economy_system()
+	if economy_system:
+		economy_system.money_changed.connect(_on_money_changed)
+		print("GameUI: Connected to EconomySystem")
+	else:
+		print("GameUI: Warning - EconomySystem not found")
 
 func _process(_delta: float) -> void:
 	"""Update UI elements"""
@@ -92,4 +97,7 @@ func _on_add_hot_dog_pressed() -> void:
 	print("GameUI: Add hot dog pressed")
 	# Emit signal to main scene
 	var main_scene = get_parent().get_parent()
-	main_scene.add_hot_dog_to_queue_requested.emit() 
+	if main_scene:
+		main_scene.add_hot_dog_to_queue_requested.emit()
+	else:
+		print("GameUI: Warning - Main scene not found") 

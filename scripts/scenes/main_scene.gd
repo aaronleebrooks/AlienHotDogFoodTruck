@@ -22,6 +22,8 @@ signal add_hot_dog_to_queue_requested
 func _ready() -> void:
 	"""Initialize the main scene"""
 	print("MainScene: Initialized")
+	print("MainScene: ProductionSystem reference: %s" % production_system)
+	print("MainScene: EconomySystem reference: %s" % economy_system)
 	
 	# Connect UIManager signals
 	UIManager.screen_changed.connect(_on_screen_changed)
@@ -75,11 +77,19 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 
 func get_production_system() -> Node:
 	"""Get reference to production system"""
-	return production_system
+	if production_system:
+		return production_system
+	else:
+		print("MainScene: Warning - ProductionSystem not found")
+		return null
 
 func get_economy_system() -> Node:
 	"""Get reference to economy system"""
-	return economy_system
+	if economy_system:
+		return economy_system
+	else:
+		print("MainScene: Warning - EconomySystem not found")
+		return null
 
 func _on_add_hot_dog_requested() -> void:
 	"""Handle add hot dog request from UI"""
