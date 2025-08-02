@@ -89,8 +89,7 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 
 func _connect_to_systems() -> void:
 	"""Connect to systems after they're ready"""
-	var main_scene = get_parent().get_parent()
-	var economy_system = main_scene.get_economy_system()
+	var economy_system = %EconomySystem
 	if economy_system:
 		economy_system.money_changed.connect(_on_money_changed)
 		print("GameUI: Connected to EconomySystem")
@@ -101,7 +100,7 @@ func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""
 	print("GameUI: Add hot dog pressed")
 	# Emit signal to main scene
-	var main_scene = get_parent().get_parent()
+	var main_scene = %MainScene
 	if main_scene:
 		main_scene.add_hot_dog_to_queue_requested.emit()
 	else:

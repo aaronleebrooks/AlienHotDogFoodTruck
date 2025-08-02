@@ -55,6 +55,11 @@ func add_to_queue() -> bool:
 	if current_queue_size < max_queue_size:
 		current_queue_size += 1
 		print("ProductionSystem: Added to queue. Size: %d" % current_queue_size)
+		
+		# Start production if not already producing
+		if not is_producing:
+			start_production()
+		
 		return true
 	else:
 		queue_full.emit()
