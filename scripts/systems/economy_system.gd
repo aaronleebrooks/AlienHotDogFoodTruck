@@ -67,6 +67,10 @@ func sell_hot_dog() -> void:
 	"""Sell a hot dog"""
 	add_money(hot_dog_price, "Hot dog sale")
 
+func get_current_money() -> float:
+	"""Get current money amount"""
+	return current_money
+
 func get_economy_stats() -> Dictionary:
 	"""Get current economy statistics"""
 	return {

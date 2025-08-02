@@ -96,6 +96,11 @@ func _connect_to_systems() -> void:
 	if economy_system:
 		economy_system.money_changed.connect(_on_money_changed)
 		print("GameUI: Connected to EconomySystem")
+		
+		# Get initial money amount
+		var current_money = economy_system.get_current_money()
+		money_label.text = "Money: $%.2f" % current_money
+		print("GameUI: Initial money: $%.2f" % current_money)
 	else:
 		print("GameUI: Warning - EconomySystem not found")
 
