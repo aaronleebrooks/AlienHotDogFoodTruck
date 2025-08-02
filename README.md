@@ -65,7 +65,7 @@ hotdogprinter/
 ├── tests/            # Test files (unit, integration)
 ├── docs/             # Documentation (architecture, API, guides)
 ├── resources/        # Game resources (data, configs, themes)
-└── Project Plan/     # Comprehensive development planning
+└── Project Plan/     # Phase-specific implementation plans
 ```
 
 ## 🚀 Getting Started
@@ -112,10 +112,25 @@ hotdogprinter/
 
 ## 📚 Documentation
 
-- **[Project Plan](Project%20Plan/README.md)**: Complete development planning
-- **[Coding Standards](Project%20Plan/CODING_STANDARDS.md)**: Code conventions and best practices
-- **[Folder Structure](Project%20Plan/FOLDER_STRUCTURE_MAPPING.md)**: Complete file organization
-- **[Architecture Review](Project%20Plan/GODOT_4.4_ARCHITECTURE_REVIEW.md)**: Godot 4.4 alignment analysis
+All documentation is organized in the `docs/` folder:
+
+### 📁 Architecture Documentation (`docs/architecture/`)
+- **[Folder Structure](docs/architecture/folder_structure_mapping.md)**: Complete file organization
+- **[Godot 4.4 Review](docs/architecture/godot_4.4_architecture_review.md)**: Best practices alignment
+- **[Project Structure](docs/architecture/project_structure.md)**: High-level architecture overview
+
+### 📁 Development Guides (`docs/guides/`)
+- **[Coding Standards](docs/guides/coding_standards.md)**: Code conventions and best practices
+- **[Development Setup](docs/guides/development_environment_setup.md)**: Environment setup guide
+- **[Project Plan](docs/guides/README.md)**: Complete development planning
+
+### 📁 API Documentation (`docs/api/`)
+- *Coming soon: System and component APIs*
+
+### Quick Start
+1. Review `docs/guides/development_environment_setup.md` for setup instructions
+2. Check `docs/guides/coding_standards.md` for development guidelines
+3. Understand the project structure in `docs/architecture/folder_structure_mapping.md`
 
 ## 🧪 Testing
 
@@ -182,7 +197,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For questions, issues, or contributions:
 - **Issues**: [GitHub Issues](https://github.com/yourusername/hotdogprinter/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/hotdogprinter/discussions)
-- **Documentation**: Check the [Project Plan](Project%20Plan/) for detailed information
+- **Documentation**: Check the [docs/](docs/) folder for comprehensive documentation
 
 ---
 
