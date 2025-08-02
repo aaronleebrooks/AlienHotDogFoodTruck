@@ -99,9 +99,21 @@ func _connect_to_systems() -> void:
 func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""
 	print("GameUI: Add hot dog pressed")
-	# Emit signal to main scene
+	print("GameUI: Current node path: %s" % get_path())
+	print("GameUI: Parent path: %s" % get_parent().get_path())
+	print("GameUI: Parent's parent path: %s" % get_parent().get_parent().get_path())
+	
+	# Try different approaches to find main scene
 	var main_scene = %MainScene
 	if main_scene:
+		print("GameUI: Found MainScene via %MainScene")
 		main_scene.add_hot_dog_to_queue_requested.emit()
 	else:
-		print("GameUI: Warning - Main scene not found") 
+		print("GameUI: Warning - Main scene not found via %MainScene")
+		# Fallback to parent approach
+		var parent_scene = get_parent().get_parent()
+		if parent_scene and parent_scene.has_method("add_hot_dog_to_queue_requested"):
+			print("GameUI: Using fallback parent approach")
+			parent_scene.add_hot_dog_to_queue_requested.emit()
+		else:
+			print("GameUI: Error - No valid main scene found") 

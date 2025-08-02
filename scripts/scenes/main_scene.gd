@@ -25,6 +25,10 @@ func _ready() -> void:
 	print("MainScene: ProductionSystem reference: %s" % production_system)
 	print("MainScene: EconomySystem reference: %s" % economy_system)
 	
+	# Print scene tree for debugging
+	print("MainScene: Scene tree structure:")
+	_print_scene_tree(self, 0)
+	
 	# Connect UIManager signals
 	UIManager.screen_changed.connect(_on_screen_changed)
 	
@@ -90,6 +94,17 @@ func get_economy_system() -> Node:
 	else:
 		print("MainScene: Warning - EconomySystem not found")
 		return null
+
+func _print_scene_tree(node: Node, depth: int) -> void:
+	"""Print the scene tree structure for debugging"""
+	var indent = "  ".repeat(depth)
+	var node_info = "%s%s (%s)" % [indent, node.name, node.get_class()]
+	if node.has_method("get_script") and node.get_script():
+		node_info += " [Script: %s]" % node.get_script().resource_path.get_file()
+	print(node_info)
+	
+	for child in node.get_children():
+		_print_scene_tree(child, depth + 1)
 
 func _on_add_hot_dog_requested() -> void:
 	"""Handle add hot dog request from UI"""
