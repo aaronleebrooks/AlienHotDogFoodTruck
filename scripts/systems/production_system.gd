@@ -143,7 +143,7 @@ func _on_production_timer_timeout() -> void:
 		total_produced += 1
 		
 		# Sell the hot dog
-		var economy_system = get_node("/root/EconomySystem")
+		var economy_system = get_node("%EconomySystem")
 		if economy_system:
 			economy_system.sell_hot_dog()
 		
