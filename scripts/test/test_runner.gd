@@ -16,6 +16,7 @@ extends Control
 @onready var run_production_tests_button: Button = $VBoxContainer/Controls/RunProductionTestsButton
 @onready var run_save_manager_tests_button: Button = $VBoxContainer/Controls/RunSaveManagerTestsButton
 @onready var run_event_bus_tests_button: Button = $VBoxContainer/Controls/RunEventBusTestsButton
+@onready var run_integration_tests_button: Button = $VBoxContainer/Controls/RunIntegrationTestsButton
 @onready var run_error_handler_tests_button: Button = $VBoxContainer/Controls/RunErrorHandlerTestsButton
 @onready var clear_results_button: Button = $VBoxContainer/Controls/ClearResultsButton
 @onready var results_text: RichTextLabel = $VBoxContainer/ResultsContainer/ResultsText
@@ -34,6 +35,7 @@ func _ready() -> void:
 	run_production_tests_button.pressed.connect(_on_run_production_tests_pressed)
 	run_save_manager_tests_button.pressed.connect(_on_run_save_manager_tests_pressed)
 	run_event_bus_tests_button.pressed.connect(_on_run_event_bus_tests_pressed)
+	run_integration_tests_button.pressed.connect(_on_run_integration_tests_pressed)
 	run_error_handler_tests_button.pressed.connect(_on_run_error_handler_tests_pressed)
 	clear_results_button.pressed.connect(_on_clear_results_pressed)
 	
@@ -56,6 +58,9 @@ func _on_run_all_tests_pressed() -> void:
 	
 	# Run EventBus tests
 	run_event_bus_tests()
+	
+	# Run Integration tests
+	run_integration_tests()
 	
 	# Run ErrorHandler tests
 	run_error_handler_tests()
@@ -106,6 +111,15 @@ func _on_run_event_bus_tests_pressed() -> void:
 	
 	run_event_bus_tests()
 	update_status("EventBus tests completed!")
+
+func _on_run_integration_tests_pressed() -> void:
+	"""Handle run integration tests button press"""
+	print("TestRunner: Running integration tests")
+	update_status("Running integration tests...")
+	clear_results()
+	
+	run_integration_tests()
+	update_status("Integration tests completed!")
 
 func _on_run_error_handler_tests_pressed() -> void:
 	"""Handle run ErrorHandler tests button press"""
@@ -256,6 +270,27 @@ func run_event_bus_tests() -> void:
 	test_instance.queue_free()
 	
 	append_result("[color=blue]EventBus Tests Completed[/color]")
+	append_result("[color=gray]Check console for detailed test output[/color]")
+
+func run_integration_tests() -> void:
+	"""Run integration system tests"""
+	append_result("[color=yellow]Starting Integration Tests[/color]")
+	
+	# Load and instantiate the integration test scene
+	var test_scene = preload("res://scenes/test/integration_tests.tscn")
+	var test_instance = test_scene.instantiate()
+	
+	# Add the test instance to the scene tree so it can run
+	add_child(test_instance)
+	
+	# Wait for the test to complete
+	for i in range(15):  # Wait up to 15 frames for integration tests
+		await get_tree().process_frame
+	
+	# Remove the test instance
+	test_instance.queue_free()
+	
+	append_result("[color=blue]Integration Tests Completed[/color]")
 	append_result("[color=gray]Check console for detailed test output[/color]")
 
 func run_error_handler_tests() -> void:
