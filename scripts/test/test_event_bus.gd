@@ -53,12 +53,7 @@ func _run_all_tests() -> void:
 	"""Run all EventBus tests"""
 	print("TestEventBus: ===== EVENT BUS TESTS =====")
 	print("TestEventBus: Starting comprehensive test suite...")
-	print("TestEventBus: EventBus reference: %s" % event_bus)
-	if event_bus:
-		var methods = event_bus.get_method_list()
-		print("TestEventBus: EventBus methods: %s" % str(methods))
-	else:
-		print("TestEventBus: No EventBus")
+	print("TestEventBus: EventBus reference: " + str(event_bus))
 	
 	_test_event_bus_initialization()
 	_test_event_emission()
@@ -91,7 +86,7 @@ func _test_event_bus_initialization() -> void:
 		_test_failed("EventBus autoload not found")
 		return
 	
-	print("TestEventBus: EventBus found: %s" % event_bus)
+	print("TestEventBus: EventBus found: " + str(event_bus))
 	
 	# Test basic properties
 	if not event_bus.has_method("emit_event"):
@@ -115,7 +110,7 @@ func _test_event_bus_initialization() -> void:
 	# Check if EventBus has any stats
 	if event_bus.has_method("get_event_stats"):
 		var stats = event_bus.get_event_stats()
-		print("TestEventBus: EventBus stats: %s" % stats)
+		print("TestEventBus: EventBus stats: " + str(stats))
 	
 	print("TestEventBus: ✅ %s PASSED" % _current_test)
 	_test_passed()
@@ -155,39 +150,24 @@ func _test_event_listening() -> void:
 	"""Test event listening functionality"""
 	_current_test = "Event Listening"
 	
-	print("TestEventBus: ===== STARTING EVENT LISTENING TEST =====")
-	
 	# Clear any previous events
 	_received_events.clear()
-	print("TestEventBus: Cleared previous events. Current count: %d" % _received_events.size())
 	
 	print("TestEventBus: Starting Event Listening test...")
-	print("TestEventBus: EventBus available: %s" % (event_bus != null))
-	print("TestEventBus: EventBus methods: %s" % event_bus.get_method_list() if event_bus else "No EventBus")
 	
 	# Register multiple listeners for the same event
-	print("TestEventBus: Registering listeners for event: %s" % test_event_types.MONEY_CHANGED)
 	var listener1_id = event_bus.register_listener(test_event_types.MONEY_CHANGED, _on_test_event_received)
 	var listener2_id = event_bus.register_listener(test_event_types.MONEY_CHANGED, _on_test_event_received)
-	
-	print("TestEventBus: Registered listeners - ID1: %s, ID2: %s" % [listener1_id, listener2_id])
-	print("TestEventBus: Listener IDs valid: %s, %s" % [listener1_id != "", listener2_id != ""])
 	
 	_test_listener_ids.append(listener1_id)
 	_test_listener_ids.append(listener2_id)
 	
 	# Emit an event
 	var event_data = {"amount": 100.0, "reason": "hot_dog_sale"}
-	print("TestEventBus: Emitting event with data: %s" % event_data)
-	print("TestEventBus: Event type: %s" % test_event_types.MONEY_CHANGED)
 	event_bus.emit_event(test_event_types.MONEY_CHANGED, event_data)
 	
 	# Wait a frame for event processing
-	print("TestEventBus: Waiting for event processing...")
 	await get_tree().process_frame
-	
-	print("TestEventBus: Received %d events" % _received_events.size())
-	print("TestEventBus: Events received: %s" % _received_events)
 	
 	# Check if both listeners received the event
 	if _received_events.size() != 2:
@@ -197,7 +177,7 @@ func _test_event_listening() -> void:
 	# Check that both events have the expected data
 	for i in range(_received_events.size()):
 		var event = _received_events[i]
-		print("TestEventBus: Checking event %d: %s" % [i, event])
+		# Check if the event data is the expected dictionary
 		
 		# Check if the event data is the expected dictionary
 		if not event.data is Dictionary:
@@ -430,24 +410,10 @@ func _test_error_handling() -> void:
 # Event handler for tests
 func _on_test_event_received(event_data) -> void:
 	"""Handle test events"""
-	print("TestEventBus: ===== EVENT CALLBACK TRIGGERED =====")
-	print("TestEventBus: Event callback called with data: " + str(event_data))
-	print("TestEventBus: Event data type: " + str(typeof(event_data)))
-	print("TestEventBus: Event data is Dictionary: " + str(event_data is Dictionary))
-	
-	if event_data is Dictionary:
-		print("TestEventBus: Event data keys: " + str(event_data.keys()))
-		if event_data.has("amount"):
-			print("TestEventBus: Amount value: " + str(event_data.amount))
-	
 	_received_events.append({
 		"data": event_data,
 		"timestamp": Time.get_unix_time_from_system()
 	})
-	
-	print("TestEventBus: Total events received: " + str(_received_events.size()))
-	print("TestEventBus: All received events: " + str(_received_events))
-	print("TestEventBus: ===== EVENT CALLBACK COMPLETE =====")
 
 func _test_passed() -> void:
 	"""Record a passed test"""

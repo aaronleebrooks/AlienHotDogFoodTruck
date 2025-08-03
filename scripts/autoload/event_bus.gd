@@ -136,17 +136,12 @@ func register_listener(event_name: String, callback: Callable, listener_id: Stri
 	if listener_id.is_empty():
 		listener_id = callback.get_object().get_class() + "_" + event_name + "_" + str(randi())
 	
-	print("EventBus: Generated listener ID: %s" % listener_id)
-	
 	# Initialize event listeners if needed
 	if not _event_listeners.has(event_name):
 		_event_listeners[event_name] = {}
-		print("EventBus: Created new event listener group for: %s" % event_name)
 	
 	# Register the listener
 	_event_listeners[event_name][listener_id] = callback
-	print("EventBus: Registered listener " + listener_id + " for event " + event_name)
-	print("EventBus: Total listeners for " + event_name + ": " + str(_event_listeners[event_name].size()))
 	
 	# Debug tracking
 	if enable_debug_mode:
@@ -290,30 +285,20 @@ func _process_event(event: Dictionary):
 	var event_name = event["event_name"]
 	var event_data = event["event_data"]
 	
-	print("EventBus: Processing event: " + event_name + " with data: " + str(event_data))
-	print("EventBus: Listeners for this event: " + str(_event_listeners.keys()))
-	
 	if not _event_listeners.has(event_name):
-		print("EventBus: No listeners found for event: %s" % event_name)
 		return
-	
-	print("EventBus: Found " + str(_event_listeners[event_name].size()) + " listeners for event: " + event_name)
 	
 	# Call all registered listeners
 	for listener_id in _event_listeners[event_name]:
 		var callback = _event_listeners[event_name][listener_id]
-		print("EventBus: Calling listener: %s" % listener_id)
 		if callback.is_valid():
 			callback.call(event_data)
-			print("EventBus: Successfully called listener: %s" % listener_id)
 		else:
 			# Remove invalid callback
 			_event_listeners[event_name].erase(listener_id)
-			_safe_log("EventBus: Removed invalid callback for listener %s" % listener_id)
-			print("EventBus: Removed invalid callback for listener: %s" % listener_id)
+			_safe_log("EventBus: Removed invalid callback for listener " + listener_id)
 	
 	_events_processed += 1
-	print("EventBus: Event processing complete. Total processed: " + str(_events_processed))
 
 func _process_event_queue():
 	"""Process all queued events"""
