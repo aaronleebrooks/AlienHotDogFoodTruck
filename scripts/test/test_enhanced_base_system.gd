@@ -138,6 +138,11 @@ func _test_performance_monitoring() -> void:
 	test_system = _create_test_system("PerformanceTestSystem")
 	test_system.enable_performance_monitoring = true
 	
+	# Add to scene tree and initialize
+	get_tree().current_scene.add_child(test_system)
+	test_system.initialize_system()
+	await get_tree().process_frame
+	
 	# Test performance tracking
 	current_test = "Operation Tracking"
 	var result = test_system.track_operation("test_operation", func(): 
@@ -148,7 +153,12 @@ func _test_performance_monitoring() -> void:
 		return sum
 	)
 	_test_case("Operation should return correct result", result == 499500)
-	_test_case("Performance metrics should be recorded", test_system.performance_metrics.operations_count > 0)
+	
+	# Check if performance metrics were recorded (with safety check)
+	if test_system.performance_metrics.has("operations_count"):
+		_test_case("Performance metrics should be recorded", test_system.performance_metrics.operations_count > 0)
+	else:
+		_test_case("Performance metrics should be recorded", false)
 	
 	# Test performance info
 	current_test = "Performance Information"
