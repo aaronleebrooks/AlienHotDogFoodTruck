@@ -76,6 +76,32 @@ signal system_shutdown(system_name: String)
 signal dependency_ready(dependency_name: String)
 signal performance_alert(alert_message: String)
 
+## _safe_log
+## 
+## Safely log messages using ErrorHandler if available, otherwise use print.
+## 
+## Parameters:
+##   level (String): Log level (error, warning, info, debug)
+##   error_code (String): Error code
+##   message (String): Log message
+##   details (String, optional): Additional details
+## 
+## @since: 1.0.0
+func _safe_log(level: String, error_code: String, message: String, details: String = "") -> void:
+	"""Safely log messages using ErrorHandler if available, otherwise use print"""
+	if ClassDB.class_exists("ErrorHandler"):
+		match level:
+			"error":
+				ErrorHandler.log_error(error_code, message, details)
+			"warning":
+				ErrorHandler.log_warning(error_code, message, details)
+			"info":
+				ErrorHandler.log_info(error_code, message, details)
+			"debug":
+				ErrorHandler.log_debug(error_code, message, details)
+	else:
+		print("BaseSystem [%s]: %s - %s" % [level.to_upper(), error_code, message])
+
 ## _ready
 ## 
 ## Initialize the system when the node is ready.
@@ -114,7 +140,7 @@ func initialize_system() -> bool:
 	"""Initialize the system with dependency checking and state management"""
 	# Check if already initialized
 	if system_state != SystemState.UNINITIALIZED:
-		ErrorHandler.log_warning("SYSTEM_ALREADY_INITIALIZED", "System %s already initialized" % system_name)
+		_safe_log("warning", "SYSTEM_ALREADY_INITIALIZED", "System %s already initialized" % system_name)
 		return system_state == SystemState.READY
 	
 	# Transition to initializing state
@@ -124,14 +150,14 @@ func initialize_system() -> bool:
 	if enable_dependency_checking and not dependencies.is_empty():
 		if not _wait_for_dependencies():
 			_change_state(SystemState.ERROR)
-			ErrorHandler.log_error("SYSTEM_DEPENDENCY_FAILED", "Failed to initialize dependencies for %s" % system_name)
+			_safe_log("error", "SYSTEM_DEPENDENCY_FAILED", "Failed to initialize dependencies for %s" % system_name)
 			return false
 	
 	# Perform system-specific initialization
 	var init_success = _initialize_system()
 	if not init_success:
 		_change_state(SystemState.ERROR)
-		ErrorHandler.log_error("SYSTEM_INIT_FAILED", "System-specific initialization failed for %s" % system_name)
+		_safe_log("error", "SYSTEM_INIT_FAILED", "System-specific initialization failed for %s" % system_name)
 		return false
 	
 	# Transition to ready state
@@ -143,7 +169,7 @@ func initialize_system() -> bool:
 	# Emit initialization signal
 	system_initialized.emit(system_name)
 	
-	ErrorHandler.log_info("SYSTEM_INIT_SUCCESS", "System %s initialized successfully" % system_name)
+	_safe_log("info", "SYSTEM_INIT_SUCCESS", "System %s initialized successfully" % system_name)
 	return true
 
 ## pause_system
@@ -163,13 +189,13 @@ func initialize_system() -> bool:
 func pause_system() -> bool:
 	"""Pause the system gracefully"""
 	if system_state != SystemState.READY:
-		ErrorHandler.log_warning("SYSTEM_PAUSE_INVALID_STATE", "Cannot pause system %s in state %s" % [system_name, SystemState.keys()[system_state]])
+		_safe_log("warning", "SYSTEM_PAUSE_INVALID_STATE", "Cannot pause system %s in state %s" % [system_name, SystemState.keys()[system_state]])
 		return false
 	
 	# Perform system-specific pause logic
 	var pause_success = _pause_system()
 	if not pause_success:
-		ErrorHandler.log_error("SYSTEM_PAUSE_FAILED", "Failed to pause system %s" % system_name)
+		_safe_log("error", "SYSTEM_PAUSE_FAILED", "Failed to pause system %s" % system_name)
 		return false
 	
 	# Change state
@@ -178,7 +204,7 @@ func pause_system() -> bool:
 	# Emit pause signal
 	system_paused.emit(system_name)
 	
-	ErrorHandler.log_info("SYSTEM_PAUSE_SUCCESS", "System %s paused successfully" % system_name)
+	_safe_log("info", "SYSTEM_PAUSE_SUCCESS", "System %s paused successfully" % system_name)
 	return true
 
 ## resume_system
@@ -197,13 +223,13 @@ func pause_system() -> bool:
 func resume_system() -> bool:
 	"""Resume the system from pause"""
 	if system_state != SystemState.PAUSED:
-		ErrorHandler.log_warning("SYSTEM_RESUME_INVALID_STATE", "Cannot resume system %s in state %s" % [system_name, SystemState.keys()[system_state]])
+		_safe_log("warning", "SYSTEM_RESUME_INVALID_STATE", "Cannot resume system %s in state %s" % [system_name, SystemState.keys()[system_state]])
 		return false
 	
 	# Perform system-specific resume logic
 	var resume_success = _resume_system()
 	if not resume_success:
-		ErrorHandler.log_error("SYSTEM_RESUME_FAILED", "Failed to resume system %s" % system_name)
+		_safe_log("error", "SYSTEM_RESUME_FAILED", "Failed to resume system %s" % system_name)
 		return false
 	
 	# Change state
@@ -212,7 +238,7 @@ func resume_system() -> bool:
 	# Emit resume signal
 	system_resumed.emit(system_name)
 	
-	ErrorHandler.log_info("SYSTEM_RESUME_SUCCESS", "System %s resumed successfully" % system_name)
+	_safe_log("info", "SYSTEM_RESUME_SUCCESS", "System %s resumed successfully" % system_name)
 	return true
 
 ## shutdown_system
@@ -232,13 +258,13 @@ func resume_system() -> bool:
 func shutdown_system() -> bool:
 	"""Shutdown the system gracefully"""
 	if system_state == SystemState.SHUTDOWN:
-		ErrorHandler.log_warning("SYSTEM_ALREADY_SHUTDOWN", "System %s already shutdown" % system_name)
+		_safe_log("warning", "SYSTEM_ALREADY_SHUTDOWN", "System %s already shutdown" % system_name)
 		return true
 	
 	# Perform system-specific shutdown logic
 	var shutdown_success = _shutdown_system()
 	if not shutdown_success:
-		ErrorHandler.log_error("SYSTEM_SHUTDOWN_FAILED", "Failed to shutdown system %s" % system_name)
+		_safe_log("error", "SYSTEM_SHUTDOWN_FAILED", "Failed to shutdown system %s" % system_name)
 		return false
 	
 	# Change state
@@ -251,7 +277,7 @@ func shutdown_system() -> bool:
 	# Emit shutdown signal
 	system_shutdown.emit(system_name)
 	
-	ErrorHandler.log_info("SYSTEM_SHUTDOWN_SUCCESS", "System %s shutdown successfully" % system_name)
+	_safe_log("info", "SYSTEM_SHUTDOWN_SUCCESS", "System %s shutdown successfully" % system_name)
 	return true
 
 ## is_system_ready
@@ -436,11 +462,14 @@ func _change_state(new_state: SystemState) -> void:
 	
 	system_state_changed.emit(new_state, previous_state)
 	
-	ErrorHandler.log_info("SYSTEM_STATE_CHANGE", "System %s changed from %s to %s" % [
+	# Log state change with null check for ErrorHandler
+	var state_change_message = "System %s changed from %s to %s" % [
 		system_name, 
 		SystemState.keys()[previous_state], 
 		SystemState.keys()[new_state]
-	])
+	]
+	
+	_safe_log("info", "SYSTEM_STATE_CHANGE", state_change_message)
 
 ## _wait_for_dependencies
 ## 
@@ -457,7 +486,7 @@ func _wait_for_dependencies() -> bool:
 	
 	while not _are_all_dependencies_ready():
 		if Time.get_ticks_msec() - start_time > timeout:
-			ErrorHandler.log_error("SYSTEM_DEPENDENCY_TIMEOUT", "Timeout waiting for dependencies for %s" % system_name)
+			_safe_log("error", "SYSTEM_DEPENDENCY_TIMEOUT", "Timeout waiting for dependencies for %s" % system_name)
 			return false
 		
 		# Use call_deferred instead of await to avoid coroutine issues
@@ -753,7 +782,7 @@ func log_error(error_code: String, message: String, details: String = "") -> voi
 	system_error.emit(system_name, last_error)
 	
 	# Log to ErrorHandler
-	ErrorHandler.log_error(error_code, message, details)
+	_safe_log("error", error_code, message, details)
 
 ## cleanup
 ## 
