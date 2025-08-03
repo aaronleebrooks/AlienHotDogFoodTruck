@@ -25,7 +25,7 @@ var event_bus: Node
 
 # Event tracking for tests
 var _received_events: Array[Dictionary] = []
-var _test_listener_ids: Array[int] = []
+var _test_listener_ids: Array[String] = []
 
 # Test event types
 var test_event_types: Dictionary = {
@@ -54,7 +54,11 @@ func _run_all_tests() -> void:
 	print("TestEventBus: ===== EVENT BUS TESTS =====")
 	print("TestEventBus: Starting comprehensive test suite...")
 	print("TestEventBus: EventBus reference: %s" % event_bus)
-	print("TestEventBus: EventBus methods: %s" % event_bus.get_method_list() if event_bus else "No EventBus")
+	if event_bus:
+		var methods = event_bus.get_method_list()
+		print("TestEventBus: EventBus methods: %s" % str(methods))
+	else:
+		print("TestEventBus: No EventBus")
 	
 	_test_event_bus_initialization()
 	_test_event_emission()
