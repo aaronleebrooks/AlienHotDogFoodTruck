@@ -434,6 +434,16 @@ func _load_resource_async(resource_path: String, use_cache: bool) -> void:
 	"""Load a resource asynchronously"""
 	var start_time = Time.get_ticks_msec()
 	
+	# Check if file exists before attempting to load
+	if not FileAccess.file_exists(resource_path):
+		# Remove from loading queue
+		_loading_in_progress.erase(resource_path)
+		
+		# Record the error with more specific message
+		resource_load_failed.emit(resource_path, "Resource file not found")
+		_safe_log("ResourceManager: Resource file not found: %s" % resource_path)
+		return
+	
 	# Load the resource
 	var resource = load(resource_path)
 	var load_time = (Time.get_ticks_msec() - start_time) / 1000.0
