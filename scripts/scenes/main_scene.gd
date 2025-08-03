@@ -115,7 +115,7 @@ func _on_screen_changed(new_screen: String, old_screen: String) -> void:
 func _on_hot_dog_produced() -> void:
 	"""Handle hot dog production"""
 	print("MainScene: Hot dog produced")
-	economy_system.sell_hot_dog()
+	# Note: The production system already sells the hot dog, so we don't need to call sell_hot_dog() here
 
 func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
