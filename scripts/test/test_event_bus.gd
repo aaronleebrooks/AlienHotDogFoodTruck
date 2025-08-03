@@ -183,6 +183,11 @@ func _test_event_listening() -> void:
 		var event = _received_events[i]
 		print("TestEventBus: Checking event %d: %s" % [i, event])
 		
+		# Check if the event data is the expected dictionary
+		if not event.data is Dictionary:
+			_test_failed("Event %d data is not a Dictionary. Event data: %s" % [i, event.data])
+			return
+		
 		if not event.data.has("amount"):
 			_test_failed("Event %d missing 'amount' field. Event data: %s" % [i, event.data])
 			return
@@ -409,7 +414,7 @@ func _test_error_handling() -> void:
 # Event handler for tests
 func _on_test_event_received(event_data) -> void:
 	"""Handle test events"""
-	print("TestEventBus: Event callback called with data: %s" % event_data)
+	print("TestEventBus: Event callback called with data: %s (type: %s)" % [event_data, typeof(event_data)])
 	
 	_received_events.append({
 		"data": event_data,
