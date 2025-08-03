@@ -1,25 +1,25 @@
-extends RefCounted
+extends Node
 
 ## Assertions
 ## 
-## Development-time assertion system for error checking and validation.
+## Development-time assertion system for the hot dog idle game.
 ## 
-## This class provides assertion functions for validating conditions during
-## development. Assertions help catch errors early and provide clear error
-## messages. They are automatically disabled in release builds.
+## This class provides comprehensive assertion capabilities for validating
+## conditions during development and testing. Assertions are designed to be
+## disabled in release builds to avoid performance overhead.
 ## 
 ## Features:
-##   - Condition validation with custom error messages
-##   - Type checking assertions
-##   - Range and value validation
-##   - Object and resource validation
+##   - Type-safe assertions for various data types
 ##   - Array and dictionary validation
 ##   - Performance assertions
+##   - File system assertions
+##   - Custom assertion messages
+##   - Development-only execution
 ## 
 ## Example:
-##   Assertions.assert_true(value > 0, "Value must be positive")
-##   Assertions.assert_not_null(object, "Object cannot be null")
-##   Assertions.assert_type(value, String, "Value must be a string")
+##   Assertions.assert_not_null(player, "Player should not be null")
+##   Assertions.assert_equal(score, expected_score, "Score mismatch")
+##   Assertions.assert_in_range(health, 0.0, 100.0, "Health out of range")
 ## 
 ## @since: 1.0.0
 ## @category: Utility
@@ -27,6 +27,15 @@ extends RefCounted
 # Assertion configuration
 static var _assertions_enabled: bool = true
 static var _break_on_failure: bool = false
+
+## _ready
+## 
+## Initialize the assertions system.
+## 
+## @since: 1.0.0
+func _ready() -> void:
+	"""Initialize the assertions system"""
+	print("Assertions: Initialized")
 
 ## assert_true
 ## 

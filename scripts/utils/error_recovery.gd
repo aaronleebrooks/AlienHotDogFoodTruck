@@ -1,4 +1,4 @@
-extends RefCounted
+extends Node
 
 ## ErrorRecovery
 ## 
@@ -98,11 +98,20 @@ static var _recovery_strategies: Dictionary = {
 	},
 	"SYSTEM_MEMORY_002": {
 		"type": "automatic",
-		"strategy": "clear_memory",
-		"fallback": "reduce_quality",
+		"strategy": "free_memory",
+		"fallback": "restart_application",
 		"max_attempts": 2
 	}
 }
+
+## _ready
+## 
+## Initialize the error recovery system.
+## 
+## @since: 1.0.0
+func _ready() -> void:
+	"""Initialize the error recovery system"""
+	print("ErrorRecovery: Initialized")
 
 ## attempt_automatic_recovery
 ## 
@@ -367,10 +376,10 @@ static func _execute_strategy_method(error_code: String, method_name: String, co
 			return _restart_system(error_code, context)
 		"emergency_shutdown":
 			return _emergency_shutdown(error_code, context)
-		"clear_memory":
-			return _clear_memory(error_code, context)
-		"reduce_quality":
-			return _reduce_quality(error_code, context)
+		"free_memory":
+			return _free_memory(error_code, context)
+		"restart_application":
+			return _restart_application(error_code, context)
 		_:
 			ErrorHandler.log_warning("RECOVERY_UNKNOWN_METHOD", "Unknown recovery method: %s" % method_name)
 			return false
@@ -699,7 +708,7 @@ static func _emergency_shutdown(error_code: String, context: Dictionary) -> bool
 	# For now, return true as placeholder
 	return true
 
-## _clear_memory
+## _free_memory
 ## 
 ## Clear system memory.
 ## 
@@ -711,27 +720,27 @@ static func _emergency_shutdown(error_code: String, context: Dictionary) -> bool
 ##   bool: True if memory clear was successful, false otherwise
 ## 
 ## @since: 1.0.0
-static func _clear_memory(error_code: String, context: Dictionary) -> bool:
+static func _free_memory(error_code: String, context: Dictionary) -> bool:
 	"""Clear system memory"""
 	# Implementation would depend on memory management
 	# For now, return true as placeholder
 	return true
 
-## _reduce_quality
+## _restart_application
 ## 
-## Reduce graphics quality.
+## Restart the application.
 ## 
 ## Parameters:
 ##   error_code (String): Error code being recovered from
 ##   context (Dictionary): Additional context information
 ## 
 ## Returns:
-##   bool: True if quality reduction was successful, false otherwise
+##   bool: True if restart was successful, false otherwise
 ## 
 ## @since: 1.0.0
-static func _reduce_quality(error_code: String, context: Dictionary) -> bool:
-	"""Reduce graphics quality"""
-	# Implementation would depend on graphics system
+static func _restart_application(error_code: String, context: Dictionary) -> bool:
+	"""Restart the application"""
+	# Implementation would depend on application management
 	# For now, return true as placeholder
 	return true
 

@@ -1,4 +1,4 @@
-extends RefCounted
+extends Node
 
 ## ErrorHandler
 ## 
@@ -102,28 +102,28 @@ static var _error_codes: Dictionary = {
 	"UI_SIGNAL_001": {
 		"category": ErrorCategory.UI,
 		"severity": ErrorSeverity.WARNING,
-		"message": "UI signal connection failed",
-		"recovery": "UI element disabled, functionality reduced"
+		"message": "Signal connection failed",
+		"recovery": "UI component will be disabled"
 	},
 	"UI_ELEMENT_002": {
 		"category": ErrorCategory.UI,
 		"severity": ErrorSeverity.ERROR,
-		"message": "Required UI element missing",
-		"recovery": "Using fallback UI layout"
+		"message": "UI element not found",
+		"recovery": "Using fallback UI element"
 	},
 	
 	# Resource errors
 	"RESOURCE_LOAD_001": {
 		"category": ErrorCategory.RESOURCE,
-		"severity": ErrorSeverity.WARNING,
+		"severity": ErrorSeverity.ERROR,
 		"message": "Resource loading failed",
 		"recovery": "Using default resource"
 	},
 	"RESOURCE_CORRUPT_002": {
 		"category": ErrorCategory.RESOURCE,
-		"severity": ErrorSeverity.ERROR,
+		"severity": ErrorSeverity.CRITICAL,
 		"message": "Resource file corrupted",
-		"recovery": "Reinstalling resource files"
+		"recovery": "Reinstalling resource"
 	},
 	
 	# Save errors
@@ -131,29 +131,24 @@ static var _error_codes: Dictionary = {
 		"category": ErrorCategory.SAVE,
 		"severity": ErrorSeverity.CRITICAL,
 		"message": "Save file corrupted",
-		"recovery": "Loading backup save or starting new game"
+		"recovery": "Attempting to restore from backup"
 	},
 	"SAVE_WRITE_002": {
 		"category": ErrorCategory.SAVE,
 		"severity": ErrorSeverity.ERROR,
-		"message": "Failed to save game",
-		"recovery": "Retrying save operation"
-	},
-	
-	# Performance errors
-	"PERF_FRAMERATE_001": {
-		"category": ErrorCategory.PERFORMANCE,
-		"severity": ErrorSeverity.WARNING,
-		"message": "Low frame rate detected",
-		"recovery": "Reducing graphics quality"
-	},
-	"PERF_MEMORY_002": {
-		"category": ErrorCategory.PERFORMANCE,
-		"severity": ErrorSeverity.WARNING,
-		"message": "High memory usage",
-		"recovery": "Clearing unused resources"
+		"message": "Save write failed",
+		"recovery": "Saving to temporary location"
 	}
 }
+
+## _ready
+## 
+## Initialize the error handler.
+## 
+## @since: 1.0.0
+func _ready() -> void:
+	"""Initialize the error handler"""
+	print("ErrorHandler: Initialized")
 
 ## log_critical
 ## 
