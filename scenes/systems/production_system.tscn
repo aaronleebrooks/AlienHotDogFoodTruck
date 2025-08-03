@@ -1,11 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://bq8v6s8tnmgev"]
+[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
 
-[ext_resource type="Script" path="res://scripts/systems/production_system.gd" id="1_0x0x0"]
+[ext_resource type="Script" path="res://scripts/systems/production_system.gd" id="1_0xqxq"]
 
 [node name="ProductionSystem" type="Node"]
-script = ExtResource("1_0x0x0")
-
-[node name="HotDogStand" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_0xqxq")
 
 [node name="ProductionTimer" type="Timer" parent="."]
 wait_time = 1.0

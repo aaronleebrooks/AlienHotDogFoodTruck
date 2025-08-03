@@ -2,226 +2,394 @@ extends Node
 
 ## ProductionSystem
 ## 
-## Production system for managing hot dog production.
+## Core system for managing hot dog production mechanics.
 ## 
-## This system handles the production of hot dogs with features including
-## queue management, production rate control, and performance tracking.
-## 
-## Features:
-##   - Hot dog production queue management
-##   - Production rate control
-##   - Performance tracking for production operations
-##   - Integration with EconomySystem for transactions
-##   - Graceful pause/resume functionality
-##   - Production statistics and monitoring
-## 
-## Example:
-##   production_system.add_to_queue()
-##   production_system.start_production()
-##   var stats = production_system.get_production_stats()
+## This system handles all aspects of hot dog production including
+## production rates, capacity management, automation, and upgrades.
+## It integrates with the EventBus, SaveManager, and other systems.
 ## 
 ## @since: 1.0.0
-## @category: System
+## @category: Systems
 
-# Production settings
-@export var production_rate: float = 1.0  # Hot dogs per second
-@export var max_queue_size: int = 10
-
-# Production state
-var is_producing: bool = false
-var current_queue_size: int = 0
-var total_produced: int = 0
+# Production data
+var production_data: Resource
 
 # Node references
 @onready var production_timer: Timer = $ProductionTimer
 @onready var production_queue: Node = $ProductionQueue
 @onready var production_stats: Node = $ProductionStats
 
-# Signals
+# Production state
+var is_initialized: bool = false
+var production_interval: float = 1.0  # Seconds between production cycles
+
+# Signals - System emits these, main scene listens
 signal production_started
 signal production_stopped
 signal hot_dog_produced
 signal queue_full
+signal queue_updated(current_size: int, max_size: int)
+signal production_rate_changed(new_rate: float)
+signal capacity_changed(new_capacity: int)
 
-## _ready
-## 
-## Initialize the production system when the node is ready.
-## 
-## This function sets up the production system and connects signals.
-## 
-## @since: 1.0.0
 func _ready() -> void:
-	"""Initialize the production system when the node is ready"""
-	print("ProductionSystem: Initializing production system")
+	"""Initialize the production system"""
+	print("ProductionSystem: Initializing...")
+	
+	# Initialize production data
+	production_data = preload("res://scripts/resources/production_data.gd").new()
 	
 	# Set up timer
-	if production_timer:
-		production_timer.timeout.connect(_on_production_timer_timeout)
-		production_timer.wait_time = 1.0 / production_rate
+	_setup_production_timer()
 	
-	# Connect GameManager signals
-	var game_manager = get_node("/root/GameManager")
-	if game_manager:
-		game_manager.game_started.connect(_on_game_started)
-		game_manager.game_paused.connect(_on_game_paused)
-		game_manager.game_resumed.connect(_on_game_resumed)
+	# Connect to EventBus for game state changes
+	_connect_to_event_bus()
+	
+	# Connect to SaveManager for persistence
+	_connect_to_save_manager()
+	
+	is_initialized = true
+	print("ProductionSystem: Initialized successfully")
+
+func _setup_production_timer() -> void:
+	"""Set up the production timer"""
+	if not production_timer:
+		production_timer = Timer.new()
+		production_timer.name = "ProductionTimer"
+		add_child(production_timer)
+	
+	production_timer.timeout.connect(_on_production_timer_timeout)
+	production_timer.one_shot = false
+	production_timer.autostart = false
+
+func _connect_to_event_bus() -> void:
+	"""Connect to EventBus for game state changes"""
+	if EventBus:
+		EventBus.register_listener("game_started", _on_game_started)
+		EventBus.register_listener("game_paused", _on_game_paused)
+		EventBus.register_listener("game_resumed", _on_game_resumed)
+		EventBus.register_listener("game_stopped", _on_game_stopped)
+
+func _connect_to_save_manager() -> void:
+	"""Connect to SaveManager for data persistence"""
+	if SaveManager:
+		SaveManager.register_saveable("production_system", self)
+
+## start_production
+## 
+## Start hot dog production.
+## 
+## Returns:
+##   bool: True if production started, false otherwise
+## 
+## Example:
+##   var started = production_system.start_production()
+func start_production() -> bool:
+	"""Start hot dog production"""
+	if not is_initialized:
+		print("ProductionSystem: ERROR - System not initialized")
+		return false
+	
+	if production_data.start_production():
+		production_timer.start(production_interval)
+		production_started.emit()
+		print("ProductionSystem: Production started")
+		return true
+	
+	return false
+
+## stop_production
+## 
+## Stop hot dog production.
+## 
+## Returns:
+##   bool: True if production stopped, false otherwise
+## 
+## Example:
+##   var stopped = production_system.stop_production()
+func stop_production() -> bool:
+	"""Stop hot dog production"""
+	if not is_initialized:
+		return false
+	
+	if production_data.stop_production():
+		production_timer.stop()
+		production_stopped.emit()
+		print("ProductionSystem: Production stopped")
+		return true
+	
+	return false
 
 ## add_to_queue
 ## 
 ## Add a hot dog to the production queue.
 ## 
-## This function adds a hot dog to the production queue and starts
-## production if it's not already running.
-## 
 ## Returns:
-##   bool: True if hot dog was added to queue, false if queue is full
+##   bool: True if added successfully, false if queue is full
 ## 
-## @since: 1.0.0
+## Example:
+##   var added = production_system.add_to_queue()
 func add_to_queue() -> bool:
 	"""Add a hot dog to the production queue"""
-	if current_queue_size >= max_queue_size:
-		queue_full.emit()
+	if not is_initialized:
 		return false
 	
-	current_queue_size += 1
-	
-	# Start production if not already producing
-	if not is_producing:
-		start_production()
-	
-	return true
-
-## start_production
-## 
-## Start the production process.
-## 
-## This function starts the production timer and begins producing
-## hot dogs at the specified rate.
-## 
-## @since: 1.0.0
-func start_production() -> void:
-	"""Start the production process"""
-	if is_producing:
-		return
-	
-	is_producing = true
-	production_started.emit()
-	
-	if production_timer:
-		production_timer.start()
-
-## stop_production
-## 
-## Stop the production process.
-## 
-## This function stops the production timer and halts hot dog production.
-## 
-## @since: 1.0.0
-func stop_production() -> void:
-	"""Stop the production process"""
-	if not is_producing:
-		return
-	
-	is_producing = false
-	production_stopped.emit()
-	
-	if production_timer:
-		production_timer.stop()
-
-## _on_production_timer_timeout
-## 
-## Handle production timer timeout.
-## 
-## This function is called when the production timer expires and
-## produces a hot dog if there are items in the queue.
-## 
-## @since: 1.0.0
-func _on_production_timer_timeout() -> void:
-	"""Handle production timer timeout"""
-	if current_queue_size > 0:
-		current_queue_size -= 1
-		total_produced += 1
+	if production_data.add_to_queue():
+		queue_updated.emit(production_data.current_queue_size, production_data.get_current_capacity())
 		
-		# Sell the hot dog
-		var economy_system = get_node("%EconomySystem")
-		if economy_system:
-			economy_system.sell_hot_dog()
+		# Check if queue is full
+		if production_data.current_queue_size >= production_data.get_current_capacity():
+			queue_full.emit()
 		
-		hot_dog_produced.emit()
-		
-		# Stop production if queue is empty
-		if current_queue_size == 0:
-			stop_production()
+		print("ProductionSystem: Added to queue. Size: %d/%d" % [production_data.current_queue_size, production_data.get_current_capacity()])
+		return true
+	
+	print("ProductionSystem: Queue is full!")
+	return false
 
-## get_production_stats
+## get_production_rate
 ## 
-## Get production statistics.
+## Get the current production rate.
 ## 
 ## Returns:
-##   Dictionary: Production statistics including queue size, total produced, etc.
+##   float: Current production rate in hot dogs per second
 ## 
-## @since: 1.0.0
-func get_production_stats() -> Dictionary:
-	"""Get production statistics"""
-	return {
-		"is_producing": is_producing,
-		"current_queue_size": current_queue_size,
-		"max_queue_size": max_queue_size,
-		"total_produced": total_produced,
-		"production_rate": production_rate
-	}
+## Example:
+##   var rate = production_system.get_production_rate()
+func get_production_rate() -> float:
+	"""Get the current production rate"""
+	if not is_initialized:
+		return 0.0
+	
+	return production_data.get_current_production_rate()
 
-## _on_game_started
+## get_queue_status
 ## 
-## Handle game started event.
+## Get the current queue status.
 ## 
-## @since: 1.0.0
-func _on_game_started() -> void:
+## Returns:
+##   Dictionary: Queue status information
+## 
+## Example:
+##   var status = production_system.get_queue_status()
+func get_queue_status() -> Dictionary:
+	"""Get the current queue status"""
+	if not is_initialized:
+		return {}
+	
+	return production_data.get_queue_status()
+
+## get_production_statistics
+## 
+## Get comprehensive production statistics.
+## 
+## Returns:
+##   Dictionary: Production statistics
+## 
+## Example:
+##   var stats = production_system.get_production_statistics()
+func get_production_statistics() -> Dictionary:
+	"""Get comprehensive production statistics"""
+	if not is_initialized:
+		return {}
+	
+	return production_data.get_production_statistics()
+
+## upgrade_production_rate
+## 
+## Upgrade the production rate.
+## 
+## Returns:
+##   bool: True if upgrade successful, false otherwise
+## 
+## Example:
+##   var upgraded = production_system.upgrade_production_rate()
+func upgrade_production_rate() -> bool:
+	"""Upgrade the production rate"""
+	if not is_initialized:
+		return false
+	
+	if production_data.upgrade_production_rate():
+		var new_rate = production_data.get_current_production_rate()
+		production_rate_changed.emit(new_rate)
+		print("ProductionSystem: Production rate upgraded to: %.2f" % new_rate)
+		return true
+	
+	return false
+
+## upgrade_capacity
+## 
+## Upgrade the production capacity.
+## 
+## Returns:
+##   bool: True if upgrade successful, false otherwise
+## 
+## Example:
+##   var upgraded = production_system.upgrade_capacity()
+func upgrade_capacity() -> bool:
+	"""Upgrade the production capacity"""
+	if not is_initialized:
+		return false
+	
+	if production_data.upgrade_capacity():
+		var new_capacity = production_data.get_current_capacity()
+		capacity_changed.emit(new_capacity)
+		print("ProductionSystem: Capacity upgraded to: %d" % new_capacity)
+		return true
+	
+	return false
+
+## upgrade_efficiency
+## 
+## Upgrade the production efficiency.
+## 
+## Returns:
+##   bool: True if upgrade successful, false otherwise
+## 
+## Example:
+##   var upgraded = production_system.upgrade_efficiency()
+func upgrade_efficiency() -> bool:
+	"""Upgrade the production efficiency"""
+	if not is_initialized:
+		return false
+	
+	if production_data.upgrade_efficiency():
+		var new_rate = production_data.get_current_production_rate()
+		production_rate_changed.emit(new_rate)
+		print("ProductionSystem: Efficiency upgraded. New rate: %.2f" % new_rate)
+		return true
+	
+	return false
+
+## set_production_interval
+## 
+## Set the production interval (time between production cycles).
+## 
+## Parameters:
+##   interval (float): Time in seconds between production cycles
+## 
+## Example:
+##   production_system.set_production_interval(0.5)
+func set_production_interval(interval: float) -> void:
+	"""Set the production interval"""
+	production_interval = max(0.1, interval)  # Minimum 0.1 seconds
+	
+	if production_timer and production_timer.time_left > 0:
+		production_timer.start(production_interval)
+	
+	print("ProductionSystem: Production interval set to: %.2f seconds" % production_interval)
+
+## is_producing
+## 
+## Check if production is currently active.
+## 
+## Returns:
+##   bool: True if producing, false otherwise
+## 
+## Example:
+##   if production_system.is_producing():
+##       print("Production is active")
+func is_producing() -> bool:
+	"""Check if production is currently active"""
+	if not is_initialized:
+		return false
+	
+	return production_data.is_producing
+
+## can_add_to_queue
+## 
+## Check if a hot dog can be added to the queue.
+## 
+## Returns:
+##   bool: True if queue has space, false otherwise
+## 
+## Example:
+##   if production_system.can_add_to_queue():
+##       production_system.add_to_queue()
+func can_add_to_queue() -> bool:
+	"""Check if a hot dog can be added to the queue"""
+	if not is_initialized:
+		return false
+	
+	return production_data.can_add_to_queue()
+
+# Event handlers
+func _on_production_timer_timeout() -> void:
+	"""Handle production timer timeout"""
+	if not is_initialized or not production_data.is_producing:
+		return
+	
+	# Produce a hot dog
+	if production_data.remove_from_queue():
+		hot_dog_produced.emit()
+		queue_updated.emit(production_data.current_queue_size, production_data.get_current_capacity())
+		
+		print("ProductionSystem: Hot dog produced! Queue: %d/%d" % [production_data.current_queue_size, production_data.get_current_capacity()])
+		
+		# Stop production if queue is empty
+		if production_data.current_queue_size == 0:
+			stop_production()
+
+func _on_game_started(event_data: Dictionary) -> void:
 	"""Handle game started event"""
 	print("ProductionSystem: Game started")
+	# Production can be started manually by the player
 
-## _on_game_paused
-## 
-## Handle game paused event.
-## 
-## @since: 1.0.0
-func _on_game_paused() -> void:
+func _on_game_paused(event_data: Dictionary) -> void:
 	"""Handle game paused event"""
-	print("ProductionSystem: Game paused")
-	stop_production()
+	print("ProductionSystem: Game paused - pausing production")
+	if production_data.is_producing:
+		production_timer.paused = true
 
-## _on_game_resumed
-## 
-## Handle game resumed event.
-## 
-## @since: 1.0.0
-func _on_game_resumed() -> void:
+func _on_game_resumed(event_data: Dictionary) -> void:
 	"""Handle game resumed event"""
-	print("ProductionSystem: Game resumed")
-	if current_queue_size > 0:
-		start_production()
+	print("ProductionSystem: Game resumed - resuming production")
+	if production_data.is_producing:
+		production_timer.paused = false
 
-## cleanup
-## 
-## Clean up the production system.
-## 
-## This function disconnects signals and cleans up resources.
-## 
-## @since: 1.0.0
-func cleanup() -> void:
-	"""Clean up the production system"""
+func _on_game_stopped(event_data: Dictionary) -> void:
+	"""Handle game stopped event"""
+	print("ProductionSystem: Game stopped - stopping production")
 	stop_production()
+
+# SaveManager integration
+func get_save_data() -> Dictionary:
+	"""Get data to save"""
+	if not is_initialized:
+		return {}
 	
-	if production_timer and production_timer.timeout.is_connected(_on_production_timer_timeout):
-		production_timer.timeout.disconnect(_on_production_timer_timeout)
+	return {
+		"production_data": production_data,
+		"is_producing": production_data.is_producing,
+		"production_interval": production_interval
+	}
+
+func load_save_data(data: Dictionary) -> void:
+	"""Load data from save"""
+	if not is_initialized:
+		return
 	
-	var game_manager = get_node("/root/GameManager")
-	if game_manager:
-		if game_manager.game_started.is_connected(_on_game_started):
-			game_manager.game_started.disconnect(_on_game_started)
-		if game_manager.game_paused.is_connected(_on_game_paused):
-			game_manager.game_paused.disconnect(_on_game_paused)
-		if game_manager.game_resumed.is_connected(_on_game_resumed):
-			game_manager.game_resumed.disconnect(_on_game_resumed)
+	if data.has("production_data"):
+		production_data = data.production_data
+	
+	if data.has("is_producing") and data.is_producing:
+		start_production()
+	
+	if data.has("production_interval"):
+		set_production_interval(data.production_interval)
+	
+	print("ProductionSystem: Save data loaded")
+
+# Cleanup
+func _exit_tree() -> void:
+	"""Clean up when the system is removed"""
+	if EventBus:
+		EventBus.unregister_listener("game_started")
+		EventBus.unregister_listener("game_paused")
+		EventBus.unregister_listener("game_resumed")
+		EventBus.unregister_listener("game_stopped")
+	
+	if SaveManager:
+		SaveManager.unregister_saveable("production_system", self)
 	
 	print("ProductionSystem: Cleaned up") 

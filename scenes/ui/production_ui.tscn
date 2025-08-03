@@ -1,0 +1,83 @@
+[gd_scene load_steps=2 format=3 uid="uid://brx85erqt07ky"]
+
+[ext_resource type="Script" path="res://scripts/ui/production_ui.gd" id="1_0xqxq"]
+
+[node name="ProductionUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0xqxq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Hot Dog Production"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProductionStatus" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer/ProductionStatus"]
+layout_mode = 2
+text = "Status: Not Producing"
+
+[node name="QueueLabel" type="Label" parent="VBoxContainer/ProductionStatus"]
+layout_mode = 2
+text = "Queue: 0/10"
+
+[node name="RateLabel" type="Label" parent="VBoxContainer/ProductionStatus"]
+layout_mode = 2
+text = "Rate: 1.0 hot dogs/sec"
+
+[node name="TotalLabel" type="Label" parent="VBoxContainer/ProductionStatus"]
+layout_mode = 2
+text = "Total Produced: 0"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Controls" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="AddToQueueButton" type="Button" parent="VBoxContainer/Controls"]
+layout_mode = 2
+text = "Add to Queue"
+
+[node name="StartProductionButton" type="Button" parent="VBoxContainer/Controls"]
+layout_mode = 2
+text = "Start Production"
+
+[node name="StopProductionButton" type="Button" parent="VBoxContainer/Controls"]
+layout_mode = 2
+text = "Stop Production"
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Upgrades" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="UpgradeRateButton" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Production Rate"
+
+[node name="UpgradeCapacityButton" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Capacity"
+
+[node name="UpgradeEfficiencyButton" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Efficiency" 

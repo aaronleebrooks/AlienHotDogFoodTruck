@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2ookyooobwf1"]
+
+[ext_resource type="PackedScene" uid="uid://bqxvn8yqxqxqx" path="res://scenes/systems/production_system.tscn" id="1_0xqxq"]
+[ext_resource type="PackedScene" uid="uid://brx85erqt07ky" path="res://scenes/ui/production_ui.tscn" id="2_0xqxq"]
+
+[node name="TestProductionSystem" type="Node"]
+
+[node name="ProductionSystem" parent="." instance=ExtResource("1_0xqxq")]
+
+[node name="ProductionUI" parent="." instance=ExtResource("2_0xqxq")] 
