@@ -134,7 +134,7 @@ func register_listener(event_name: String, callback: Callable, listener_id: Stri
 	
 	# Generate listener ID if not provided
 	if listener_id.is_empty():
-		listener_id = "%s_%s_%s" % [callback.get_object().get_class(), event_name, str(randi())]
+		listener_id = callback.get_object().get_class() + "_" + event_name + "_" + str(randi())
 	
 	print("EventBus: Generated listener ID: %s" % listener_id)
 	
@@ -145,8 +145,8 @@ func register_listener(event_name: String, callback: Callable, listener_id: Stri
 	
 	# Register the listener
 	_event_listeners[event_name][listener_id] = callback
-	print("EventBus: Registered listener %s for event %s" % [listener_id, event_name])
-	print("EventBus: Total listeners for %s: %d" % [event_name, _event_listeners[event_name].size()])
+	print("EventBus: Registered listener " + listener_id + " for event " + event_name)
+	print("EventBus: Total listeners for " + event_name + ": " + str(_event_listeners[event_name].size()))
 	
 	# Debug tracking
 	if enable_debug_mode:
@@ -290,14 +290,14 @@ func _process_event(event: Dictionary):
 	var event_name = event["event_name"]
 	var event_data = event["event_data"]
 	
-	print("EventBus: Processing event: %s with data: %s" % [event_name, event_data])
-	print("EventBus: Listeners for this event: %s" % _event_listeners.keys())
+	print("EventBus: Processing event: " + event_name + " with data: " + str(event_data))
+	print("EventBus: Listeners for this event: " + str(_event_listeners.keys()))
 	
 	if not _event_listeners.has(event_name):
 		print("EventBus: No listeners found for event: %s" % event_name)
 		return
 	
-	print("EventBus: Found %d listeners for event: %s" % [_event_listeners[event_name].size(), event_name])
+	print("EventBus: Found " + str(_event_listeners[event_name].size()) + " listeners for event: " + event_name)
 	
 	# Call all registered listeners
 	for listener_id in _event_listeners[event_name]:
@@ -313,7 +313,7 @@ func _process_event(event: Dictionary):
 			print("EventBus: Removed invalid callback for listener: %s" % listener_id)
 	
 	_events_processed += 1
-	print("EventBus: Event processing complete. Total processed: %d" % _events_processed)
+	print("EventBus: Event processing complete. Total processed: " + str(_events_processed))
 
 func _process_event_queue():
 	"""Process all queued events"""
@@ -333,14 +333,14 @@ func _add_to_history(event: Dictionary):
 
 func _log_debug_event(event: Dictionary):
 	"""Log event for debugging"""
-	var debug_info = "Event: %s -> %s" % [event["event_name"], str(event["event_data"])]
+	var debug_info = "Event: " + event["event_name"] + " -> " + str(event["event_data"])
 	_debug_events.append(debug_info)
 	
 	# Keep debug events list manageable
 	if _debug_events.size() > 100:
 		_debug_events.pop_front()
 	
-	_safe_log("EventBus: %s" % debug_info)
+	_safe_log("EventBus: " + debug_info)
 
 func _get_total_listeners() -> int:
 	"""Get total number of active listeners"""
