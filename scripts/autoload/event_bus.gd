@@ -121,9 +121,6 @@ func emit_event(event_name: String, event_data = null, immediate: bool = false):
 ## Example:
 ##   var listener_id = EventBus.register_listener("money_changed", _on_money_changed)
 func register_listener(event_name: String, callback: Callable, listener_id: String = "") -> String:
-	print("EventBus: Registering listener for event: %s" % event_name)
-	print("EventBus: Callback valid: %s" % callback.is_valid())
-	
 	if not event_name or event_name.is_empty():
 		_safe_log("EventBus: Cannot register listener - invalid event name")
 		return ""
@@ -151,7 +148,7 @@ func register_listener(event_name: String, callback: Callable, listener_id: Stri
 			"method": callback.get_method()
 		}
 	
-	_safe_log("EventBus: Registered listener %s for event %s" % [listener_id, event_name])
+	_safe_log("EventBus: Registered listener " + listener_id + " for event " + event_name)
 	return listener_id
 
 ## unregister_listener

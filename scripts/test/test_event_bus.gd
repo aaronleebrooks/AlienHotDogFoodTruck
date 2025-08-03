@@ -52,8 +52,6 @@ func _ready() -> void:
 func _run_all_tests() -> void:
 	"""Run all EventBus tests"""
 	print("TestEventBus: ===== EVENT BUS TESTS =====")
-	print("TestEventBus: Starting comprehensive test suite...")
-	print("TestEventBus: EventBus reference: " + str(event_bus))
 	
 	_test_event_bus_initialization()
 	_test_event_emission()
@@ -67,9 +65,7 @@ func _run_all_tests() -> void:
 	_test_error_handling()
 	
 	print("TestEventBus: ===== TEST RESULTS =====")
-	print("TestEventBus: Tests passed: " + str(_tests_passed))
-	print("TestEventBus: Tests failed: " + str(_tests_failed))
-	print("TestEventBus: Total tests: " + str(_tests_passed + _tests_failed))
+	print("TestEventBus: Tests passed: " + str(_tests_passed) + ", failed: " + str(_tests_failed) + ", total: " + str(_tests_passed + _tests_failed))
 	
 	if _tests_failed == 0:
 		print("TestEventBus: ✅ ALL TESTS PASSED!")
@@ -80,13 +76,9 @@ func _test_event_bus_initialization() -> void:
 	"""Test EventBus initialization"""
 	_current_test = "EventBus Initialization"
 	
-	print("TestEventBus: Testing EventBus initialization...")
-	
 	if not event_bus:
 		_test_failed("EventBus autoload not found")
 		return
-	
-	print("TestEventBus: EventBus found: " + str(event_bus))
 	
 	# Test basic properties
 	if not event_bus.has_method("emit_event"):
@@ -101,16 +93,8 @@ func _test_event_bus_initialization() -> void:
 		_test_failed("EventBus missing unregister_listener method")
 		return
 	
-	# Test basic functionality
-	print("TestEventBus: Testing basic EventBus functionality...")
-	
 	# Try to emit a test event
 	event_bus.emit_event("test_initialization", {"test": true})
-	
-	# Check if EventBus has any stats
-	if event_bus.has_method("get_event_stats"):
-		var stats = event_bus.get_event_stats()
-		print("TestEventBus: EventBus stats: " + str(stats))
 	
 	print("TestEventBus: ✅ %s PASSED" % _current_test)
 	_test_passed()
@@ -153,7 +137,7 @@ func _test_event_listening() -> void:
 	# Clear any previous events
 	_received_events.clear()
 	
-	print("TestEventBus: Starting Event Listening test...")
+
 	
 	# Register multiple listeners for the same event
 	var listener1_id = event_bus.register_listener(test_event_types.MONEY_CHANGED, _on_test_event_received)
@@ -420,33 +404,9 @@ func _test_passed() -> void:
 	_tests_passed += 1
 
 func _test_failed(message: String) -> void:
-	"""Record a failed test with detailed error information"""
+	"""Record a failed test"""
 	_tests_failed += 1
-	
-	# Get stack trace
-	var stack_trace = get_stack()
-	var stack_info = ""
-	for i in range(stack_trace.size()):
-		var frame = stack_trace[i]
-		stack_info += "  " + str(i) + ": " + frame.source + ":" + str(frame.line) + " in " + frame.function + "()\n"
-	
-	# Print detailed error information
-	print("TestEventBus: ❌ " + _current_test + " FAILED")
-	print("TestEventBus: Error: " + message)
-	print("TestEventBus: Stack trace:")
-	print(stack_info)
-	
-	# Print current state information
-	print("TestEventBus: Current state:")
-	print("  - Tests passed: " + str(_tests_passed))
-	print("  - Tests failed: " + str(_tests_failed))
-	print("  - Received events: " + str(_received_events))
-	print("  - Listener IDs: " + str(_test_listener_ids))
-	
-	if event_bus:
-		print("  - EventBus methods: " + str(event_bus.get_method_list()))
-		if event_bus.has_method("get_event_stats"):
-			print("  - Event stats: " + str(event_bus.get_event_stats()))
+	print("TestEventBus: ❌ " + _current_test + " FAILED - " + message)
 
 func _exit_tree() -> void:
 	"""Clean up test listeners"""
