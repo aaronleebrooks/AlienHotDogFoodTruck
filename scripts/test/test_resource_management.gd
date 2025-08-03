@@ -25,7 +25,7 @@ var test_resources: Array[String] = []
 
 # Event tracking for tests
 var _received_events: Array[Dictionary] = []
-var _test_listener_ids: Array[String] = []
+var _test_listener_ids: Array[int] = []
 
 func _ready():
 	_safe_log("TestResourceManagement: Starting Resource Management tests")
