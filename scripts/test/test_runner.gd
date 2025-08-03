@@ -241,32 +241,22 @@ func run_event_bus_tests() -> void:
 	"""Run EventBus system tests"""
 	append_result("[color=yellow]Starting EventBus Tests[/color]")
 	
-	# Get EventBus reference
-	var event_bus = get_node("/root/EventBus")
+	# Load and instantiate the EventBus test scene
+	var test_scene = preload("res://scenes/test/test_event_bus.tscn")
+	var test_instance = test_scene.instantiate()
 	
-	# Test 1: Event emission
-	append_result("  [color=gray]Running: test_event_emission[/color]")
-	if event_bus and event_bus.has_method("emit_event"):
-		append_result("  [color=green]✅ test_event_emission PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_event_emission FAILED[/color]")
+	# Add the test instance to the scene tree so it can run
+	add_child(test_instance)
 	
-	# Test 2: Event listening
-	append_result("  [color=gray]Running: test_event_listening[/color]")
-	if event_bus and event_bus.has_method("listen"):
-		append_result("  [color=green]✅ test_event_listening PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_event_listening FAILED[/color]")
+	# Wait for the test to complete (give it more time for async operations)
+	for i in range(10):  # Wait up to 10 frames
+		await get_tree().process_frame
 	
-	# Test 3: Event data passing
-	append_result("  [color=gray]Running: test_event_data_passing[/color]")
-	var test_data = {"test": "value", "number": 42}
-	if test_data.has("test") and test_data.has("number"):
-		append_result("  [color=green]✅ test_event_data_passing PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_event_data_passing FAILED[/color]")
+	# Remove the test instance
+	test_instance.queue_free()
 	
 	append_result("[color=blue]EventBus Tests Completed[/color]")
+	append_result("[color=gray]Check console for detailed test output[/color]")
 
 func run_error_handler_tests() -> void:
 	"""Run ErrorHandler system tests"""
