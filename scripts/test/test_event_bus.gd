@@ -72,9 +72,9 @@ func _run_all_tests() -> void:
 	_test_error_handling()
 	
 	print("TestEventBus: ===== TEST RESULTS =====")
-	print("TestEventBus: Tests passed: %d" % _tests_passed)
-	print("TestEventBus: Tests failed: %d" % _tests_failed)
-	print("TestEventBus: Total tests: %d" % (_tests_passed + _tests_failed))
+	print("TestEventBus: Tests passed: " + str(_tests_passed))
+	print("TestEventBus: Tests failed: " + str(_tests_failed))
+	print("TestEventBus: Total tests: " + str(_tests_passed + _tests_failed))
 	
 	if _tests_failed == 0:
 		print("TestEventBus: ✅ ALL TESTS PASSED!")
@@ -191,7 +191,7 @@ func _test_event_listening() -> void:
 	
 	# Check if both listeners received the event
 	if _received_events.size() != 2:
-		_test_failed("Expected 2 events, got %d. Events received: %s" % [_received_events.size(), _received_events])
+		_test_failed("Expected 2 events, got " + str(_received_events.size()) + ". Events received: " + str(_received_events))
 		return
 	
 	# Check that both events have the expected data
@@ -201,15 +201,15 @@ func _test_event_listening() -> void:
 		
 		# Check if the event data is the expected dictionary
 		if not event.data is Dictionary:
-			_test_failed("Event %d data is not a Dictionary. Event data: %s" % [i, event.data])
+			_test_failed("Event " + str(i) + " data is not a Dictionary. Event data: " + str(event.data))
 			return
 		
 		if not event.data.has("amount"):
-			_test_failed("Event %d missing 'amount' field. Event data: %s" % [i, event.data])
+			_test_failed("Event " + str(i) + " missing 'amount' field. Event data: " + str(event.data))
 			return
 		
 		if event.data.amount != 100.0:
-			_test_failed("Event %d has wrong amount. Expected 100.0, got %s" % [i, event.data.amount])
+			_test_failed("Event " + str(i) + " has wrong amount. Expected 100.0, got " + str(event.data.amount))
 			return
 	
 	print("TestEventBus: ✅ %s PASSED" % _current_test)
@@ -431,22 +431,22 @@ func _test_error_handling() -> void:
 func _on_test_event_received(event_data) -> void:
 	"""Handle test events"""
 	print("TestEventBus: ===== EVENT CALLBACK TRIGGERED =====")
-	print("TestEventBus: Event callback called with data: %s" % event_data)
-	print("TestEventBus: Event data type: %s" % typeof(event_data))
-	print("TestEventBus: Event data is Dictionary: %s" % (event_data is Dictionary))
+	print("TestEventBus: Event callback called with data: " + str(event_data))
+	print("TestEventBus: Event data type: " + str(typeof(event_data)))
+	print("TestEventBus: Event data is Dictionary: " + str(event_data is Dictionary))
 	
 	if event_data is Dictionary:
-		print("TestEventBus: Event data keys: %s" % event_data.keys())
+		print("TestEventBus: Event data keys: " + str(event_data.keys()))
 		if event_data.has("amount"):
-			print("TestEventBus: Amount value: %s" % event_data.amount)
+			print("TestEventBus: Amount value: " + str(event_data.amount))
 	
 	_received_events.append({
 		"data": event_data,
 		"timestamp": Time.get_unix_time_from_system()
 	})
 	
-	print("TestEventBus: Total events received: %d" % _received_events.size())
-	print("TestEventBus: All received events: %s" % _received_events)
+	print("TestEventBus: Total events received: " + str(_received_events.size()))
+	print("TestEventBus: All received events: " + str(_received_events))
 	print("TestEventBus: ===== EVENT CALLBACK COMPLETE =====")
 
 func _test_passed() -> void:
@@ -462,25 +462,25 @@ func _test_failed(message: String) -> void:
 	var stack_info = ""
 	for i in range(stack_trace.size()):
 		var frame = stack_trace[i]
-		stack_info += "  %d: %s:%d in %s()\n" % [i, frame.source, frame.line, frame.function]
+		stack_info += "  " + str(i) + ": " + frame.source + ":" + str(frame.line) + " in " + frame.function + "()\n"
 	
 	# Print detailed error information
-	print("TestEventBus: ❌ %s FAILED" % _current_test)
-	print("TestEventBus: Error: %s" % message)
+	print("TestEventBus: ❌ " + _current_test + " FAILED")
+	print("TestEventBus: Error: " + message)
 	print("TestEventBus: Stack trace:")
 	print(stack_info)
 	
 	# Print current state information
 	print("TestEventBus: Current state:")
-	print("  - Tests passed: %d" % _tests_passed)
-	print("  - Tests failed: %d" % _tests_failed)
-	print("  - Received events: %s" % _received_events)
-	print("  - Listener IDs: %s" % _test_listener_ids)
+	print("  - Tests passed: " + str(_tests_passed))
+	print("  - Tests failed: " + str(_tests_failed))
+	print("  - Received events: " + str(_received_events))
+	print("  - Listener IDs: " + str(_test_listener_ids))
 	
 	if event_bus:
-		print("  - EventBus methods: %s" % event_bus.get_method_list())
+		print("  - EventBus methods: " + str(event_bus.get_method_list()))
 		if event_bus.has_method("get_event_stats"):
-			print("  - Event stats: %s" % event_bus.get_event_stats())
+			print("  - Event stats: " + str(event_bus.get_event_stats()))
 
 func _exit_tree() -> void:
 	"""Clean up test listeners"""
