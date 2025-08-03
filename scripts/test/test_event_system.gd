@@ -118,7 +118,8 @@ func _test_basic_event_emission():
 	# Emit a test event
 	event_bus.emit_event("test_event", {"message": "Hello World"})
 	
-	# Wait a frame for processing
+	# Wait multiple frames for processing
+	await get_tree().process_frame
 	await get_tree().process_frame
 	
 	# Check if event was received
@@ -209,7 +210,9 @@ func _test_event_queuing():
 		_test_failed("Queued event was processed immediately")
 		return
 	
-	# Wait for queue processing
+	# Wait multiple frames for queue processing
+	await get_tree().process_frame
+	await get_tree().process_frame
 	await get_tree().process_frame
 	
 	# Check that event was processed
