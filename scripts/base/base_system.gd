@@ -590,9 +590,13 @@ func _start_performance_monitoring() -> void:
 ## @since: 1.0.0
 func _stop_performance_monitoring() -> void:
 	"""Stop performance monitoring for the system"""
-	performance_metrics["end_time"] = Time.get_ticks_msec()
-	performance_metrics["total_uptime"] = performance_metrics.end_time - performance_metrics.start_time
-	memory_usage["end"] = _get_memory_usage()
+	# Only stop monitoring if it was started
+	if performance_metrics.has("start_time"):
+		performance_metrics["end_time"] = Time.get_ticks_msec()
+		performance_metrics["total_uptime"] = performance_metrics.end_time - performance_metrics.start_time
+	
+	if memory_usage.has("start"):
+		memory_usage["end"] = _get_memory_usage()
 
 ## _get_memory_usage
 ## 
@@ -620,6 +624,10 @@ func _get_memory_usage() -> int:
 ## @since: 1.0.0
 func _record_operation_metrics(operation_name: String, duration: float, memory_delta: int) -> void:
 	"""Record metrics for an operation"""
+	# Only record metrics if performance monitoring is enabled and initialized
+	if not enable_performance_monitoring or not performance_metrics.has("start_time"):
+		return
+	
 	performance_metrics.operations_count += 1
 	performance_metrics.total_operation_time += duration
 	performance_metrics.average_operation_time = performance_metrics.total_operation_time / performance_metrics.operations_count
@@ -650,6 +658,10 @@ func _record_operation_metrics(operation_name: String, duration: float, memory_d
 ## @since: 1.0.0
 func _check_performance_alerts(operation_name: String, duration: float, memory_delta: int) -> void:
 	"""Check for performance issues and generate alerts"""
+	# Only check alerts if performance monitoring is enabled and initialized
+	if not enable_performance_monitoring or not memory_usage.has("current"):
+		return
+	
 	# Check for slow operations (more than one frame at 60fps)
 	if duration > 16.0:
 		var alert = "Slow operation: %s took %.2fms" % [operation_name, duration]
@@ -663,13 +675,14 @@ func _check_performance_alerts(operation_name: String, duration: float, memory_d
 		performance_alert.emit(alert)
 	
 	# Check for memory leaks (sustained high memory usage)
-	if memory_usage.current > memory_usage.peak * 1.5:
-		var alert = "Potential memory leak: current usage %.2fMB vs peak %.2fMB" % [
-			memory_usage.current / 1024.0 / 1024.0,
-			memory_usage.peak / 1024.0 / 1024.0
-		]
-		performance_alerts.append(alert)
-		performance_alert.emit(alert)
+	if memory_usage.has("peak") and memory_usage.peak > 0:
+		if memory_usage.current > memory_usage.peak * 1.5:
+			var alert = "Potential memory leak: current usage %.2fMB vs peak %.2fMB" % [
+				memory_usage.current / 1024.0 / 1024.0,
+				memory_usage.peak / 1024.0 / 1024.0
+			]
+			performance_alerts.append(alert)
+			performance_alert.emit(alert)
 
 ## _continue_initialization
 ## 
