@@ -334,7 +334,7 @@ func _get_total_listeners() -> int:
 func _safe_log(message: String):
 	"""Safely log messages using ErrorHandler if available"""
 	if ClassDB.class_exists("ErrorHandler"):
-		ErrorHandler.log_info(message)
+		ErrorHandler.log_info("EVENT_BUS_INFO", message)
 	else:
 		print(message)
 
