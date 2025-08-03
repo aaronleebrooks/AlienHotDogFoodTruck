@@ -50,6 +50,10 @@ text = "Run SaveManager Tests"
 layout_mode = 2
 text = "Run EventBus Tests"
 
+[node name="RunIntegrationTestsButton" type="Button" parent="VBoxContainer/Controls"]
+layout_mode = 2
+text = "Run Integration Tests"
+
 [node name="RunErrorHandlerTestsButton" type="Button" parent="VBoxContainer/Controls"]
 layout_mode = 2
 text = "Run ErrorHandler Tests"
