@@ -74,11 +74,11 @@ Establish a clean, modular, and scalable architecture for the hot dog idle game 
 - [x] Test enhanced base class functionality
 
 ### 2. Event System
-- [ ] Create global event bus
-- [ ] Define event types and data structures
-- [ ] Implement event registration
-- [ ] Set up event queuing
-- [ ] Create event debugging tools
+- [x] Create global event bus
+- [x] Define event types and data structures
+- [x] Implement event registration
+- [x] Set up event queuing
+- [x] Create event debugging tools
 
 ### 3. Resource Management
 - [ ] Create resource loading system
