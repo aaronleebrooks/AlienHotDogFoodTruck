@@ -72,8 +72,9 @@ func _connect_to_event_bus() -> void:
 
 func _connect_to_save_manager() -> void:
 	"""Connect to SaveManager for data persistence"""
-	if SaveManager:
-		SaveManager.register_saveable("production_system", self)
+	# SaveManager currently gets system references from the main scene
+	# No registration needed - the system will be found automatically
+	pass
 
 ## start_production
 ## 
@@ -389,7 +390,7 @@ func _exit_tree() -> void:
 		EventBus.unregister_listener("game_resumed")
 		EventBus.unregister_listener("game_stopped")
 	
-	if SaveManager:
-		SaveManager.unregister_saveable("production_system", self)
+	# SaveManager doesn't use registration system
+	# No cleanup needed
 	
 	print("ProductionSystem: Cleaned up") 
