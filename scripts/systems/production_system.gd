@@ -214,10 +214,23 @@ func upgrade_production_rate() -> bool:
 	if not is_initialized:
 		return false
 	
+	# Check if player can afford the upgrade
+	var current_level = production_data.production_rate_level
+	var upgrade_cost = _get_upgrade_cost("rate", current_level)
+	
+	if not _can_afford_upgrade(upgrade_cost):
+		print("ProductionSystem: Cannot afford production rate upgrade. Cost: $%.2f" % upgrade_cost)
+		return false
+	
+	# Spend money on upgrade
+	if not _spend_money_on_upgrade(upgrade_cost, "Production Rate Upgrade"):
+		return false
+	
+	# Perform the upgrade
 	if production_data.upgrade_production_rate():
 		var new_rate = production_data.get_current_production_rate()
 		production_rate_changed.emit(new_rate)
-		print("ProductionSystem: Production rate upgraded to: %.2f" % new_rate)
+		print("ProductionSystem: Production rate upgraded to: %.2f (Cost: $%.2f)" % [new_rate, upgrade_cost])
 		return true
 	
 	return false
@@ -236,10 +249,23 @@ func upgrade_capacity() -> bool:
 	if not is_initialized:
 		return false
 	
+	# Check if player can afford the upgrade
+	var current_level = production_data.capacity_level
+	var upgrade_cost = _get_upgrade_cost("capacity", current_level)
+	
+	if not _can_afford_upgrade(upgrade_cost):
+		print("ProductionSystem: Cannot afford capacity upgrade. Cost: $%.2f" % upgrade_cost)
+		return false
+	
+	# Spend money on upgrade
+	if not _spend_money_on_upgrade(upgrade_cost, "Capacity Upgrade"):
+		return false
+	
+	# Perform the upgrade
 	if production_data.upgrade_capacity():
 		var new_capacity = production_data.get_current_capacity()
 		capacity_changed.emit(new_capacity)
-		print("ProductionSystem: Capacity upgraded to: %d" % new_capacity)
+		print("ProductionSystem: Capacity upgraded to: %d (Cost: $%.2f)" % [new_capacity, upgrade_cost])
 		return true
 	
 	return false
@@ -258,10 +284,23 @@ func upgrade_efficiency() -> bool:
 	if not is_initialized:
 		return false
 	
+	# Check if player can afford the upgrade
+	var current_level = production_data.efficiency_level
+	var upgrade_cost = _get_upgrade_cost("efficiency", current_level)
+	
+	if not _can_afford_upgrade(upgrade_cost):
+		print("ProductionSystem: Cannot afford efficiency upgrade. Cost: $%.2f" % upgrade_cost)
+		return false
+	
+	# Spend money on upgrade
+	if not _spend_money_on_upgrade(upgrade_cost, "Efficiency Upgrade"):
+		return false
+	
+	# Perform the upgrade
 	if production_data.upgrade_efficiency():
 		var new_rate = production_data.get_current_production_rate()
 		production_rate_changed.emit(new_rate)
-		print("ProductionSystem: Efficiency upgraded. New rate: %.2f" % new_rate)
+		print("ProductionSystem: Efficiency upgraded. New rate: %.2f (Cost: $%.2f)" % [new_rate, upgrade_cost])
 		return true
 	
 	return false
@@ -397,4 +436,95 @@ func _exit_tree() -> void:
 	# SaveManager doesn't use registration system
 	# No cleanup needed
 	
-	print("ProductionSystem: Cleaned up") 
+	print("ProductionSystem: Cleaned up")
+
+# Upgrade cost helper methods
+func _get_upgrade_cost(upgrade_type: String, current_level: int) -> float:
+	"""Get the cost for a specific upgrade type and level"""
+	# Try to get game config from autoload or create default
+	var game_config = null
+	if get_node_or_null("/root/GameConfig"):
+		game_config = get_node("/root/GameConfig")
+	else:
+		# Create a default config if not available
+		game_config = preload("res://scripts/resources/game_config.gd").new()
+	
+	return game_config.get_upgrade_cost(upgrade_type, current_level)
+
+func _can_afford_upgrade(cost: float) -> bool:
+	"""Check if the player can afford an upgrade"""
+	var economy_system = get_node_or_null("/root/EconomySystem")
+	if not economy_system:
+		print("ProductionSystem: WARNING - EconomySystem not found, allowing upgrade")
+		return true
+	
+	return economy_system.get_current_money() >= cost
+
+func _spend_money_on_upgrade(cost: float, description: String) -> bool:
+	"""Spend money on an upgrade"""
+	var economy_system = get_node_or_null("/root/EconomySystem")
+	if not economy_system:
+		print("ProductionSystem: WARNING - EconomySystem not found, skipping payment")
+		return true
+	
+	return economy_system.spend_money(cost, description)
+
+## get_upgrade_costs
+## 
+## Get the costs for all available upgrades.
+## 
+## Returns:
+##   Dictionary: Costs for each upgrade type
+## 
+## Example:
+##   var costs = production_system.get_upgrade_costs()
+func get_upgrade_costs() -> Dictionary:
+	"""Get the costs for all available upgrades"""
+	if not is_initialized:
+		return {}
+	
+	var current_levels = {
+		"rate": production_data.production_rate_level,
+		"capacity": production_data.capacity_level,
+		"efficiency": production_data.efficiency_level
+	}
+	
+	var game_config = null
+	if get_node_or_null("/root/GameConfig"):
+		game_config = get_node("/root/GameConfig")
+	else:
+		game_config = preload("res://scripts/resources/game_config.gd").new()
+	
+	return game_config.get_all_upgrade_costs(current_levels)
+
+## can_afford_upgrade
+## 
+## Check if the player can afford a specific upgrade.
+## 
+## Parameters:
+##   upgrade_type (String): Type of upgrade ("rate", "capacity", "efficiency")
+## 
+## Returns:
+##   bool: True if player can afford the upgrade
+## 
+## Example:
+##   if production_system.can_afford_upgrade("rate"):
+##       production_system.upgrade_production_rate()
+func can_afford_upgrade(upgrade_type: String) -> bool:
+	"""Check if the player can afford a specific upgrade"""
+	if not is_initialized:
+		return false
+	
+	var current_level = 1
+	match upgrade_type:
+		"rate":
+			current_level = production_data.production_rate_level
+		"capacity":
+			current_level = production_data.capacity_level
+		"efficiency":
+			current_level = production_data.efficiency_level
+		_:
+			return false
+	
+	var upgrade_cost = _get_upgrade_cost(upgrade_type, current_level)
+	return _can_afford_upgrade(upgrade_cost) 

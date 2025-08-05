@@ -11,7 +11,12 @@ extends BaseResource
 # Production settings
 @export var base_production_rate: float = 1.0  # Hot dogs per second
 @export var max_queue_size: int = 10
-@export var production_upgrade_cost: float = 50.0
+
+# Upgrade costs (base costs, will be multiplied by level)
+@export var production_rate_upgrade_base_cost: float = 25.0
+@export var capacity_upgrade_base_cost: float = 30.0
+@export var efficiency_upgrade_base_cost: float = 40.0
+@export var upgrade_cost_multiplier: float = 1.5  # Cost increases by this factor per level
 
 # Economy settings
 @export var money_multiplier: float = 1.0
@@ -106,7 +111,18 @@ func load_config() -> bool:
 		hot_dog_price = loaded_config.hot_dog_price
 		base_production_rate = loaded_config.base_production_rate
 		max_queue_size = loaded_config.max_queue_size
-		production_upgrade_cost = loaded_config.production_upgrade_cost
+		# Load upgrade costs (with fallback for old configs)
+		if loaded_config.has_method("get") and loaded_config.get("production_upgrade_cost"):
+			# Old config format - use single cost for all upgrades
+			production_rate_upgrade_base_cost = loaded_config.production_upgrade_cost
+			capacity_upgrade_base_cost = loaded_config.production_upgrade_cost
+			efficiency_upgrade_base_cost = loaded_config.production_upgrade_cost
+		else:
+			# New config format
+			production_rate_upgrade_base_cost = loaded_config.production_rate_upgrade_base_cost
+			capacity_upgrade_base_cost = loaded_config.capacity_upgrade_base_cost
+			efficiency_upgrade_base_cost = loaded_config.efficiency_upgrade_base_cost
+			upgrade_cost_multiplier = loaded_config.upgrade_cost_multiplier
 		money_multiplier = loaded_config.money_multiplier
 		price_inflation_rate = loaded_config.price_inflation_rate
 		max_money = loaded_config.max_money
@@ -118,4 +134,54 @@ func load_config() -> bool:
 		sfx_volume = loaded_config.sfx_volume
 		enable_sound = loaded_config.enable_sound
 		return true
-	return false 
+	return false
+
+## get_upgrade_cost
+## 
+## Calculate the cost for a specific upgrade type and level.
+## 
+## Parameters:
+##   upgrade_type (String): Type of upgrade ("rate", "capacity", "efficiency")
+##   current_level (int): Current level of the upgrade
+## 
+## Returns:
+##   float: Cost for the upgrade
+## 
+## Example:
+##   var cost = game_config.get_upgrade_cost("rate", 2)
+func get_upgrade_cost(upgrade_type: String, current_level: int) -> float:
+	"""Calculate the cost for a specific upgrade type and level"""
+	var base_cost = 0.0
+	
+	match upgrade_type:
+		"rate":
+			base_cost = production_rate_upgrade_base_cost
+		"capacity":
+			base_cost = capacity_upgrade_base_cost
+		"efficiency":
+			base_cost = efficiency_upgrade_base_cost
+		_:
+			return 0.0
+	
+	# Cost increases exponentially with level
+	return base_cost * pow(upgrade_cost_multiplier, current_level - 1)
+
+## get_all_upgrade_costs
+## 
+## Get costs for all upgrade types at their current levels.
+## 
+## Parameters:
+##   current_levels (Dictionary): Current levels for each upgrade type
+## 
+## Returns:
+##   Dictionary: Costs for each upgrade type
+## 
+## Example:
+##   var costs = game_config.get_all_upgrade_costs({"rate": 2, "capacity": 1, "efficiency": 1})
+func get_all_upgrade_costs(current_levels: Dictionary) -> Dictionary:
+	"""Get costs for all upgrade types at their current levels"""
+	return {
+		"rate": get_upgrade_cost("rate", current_levels.get("rate", 1)),
+		"capacity": get_upgrade_cost("capacity", current_levels.get("capacity", 1)),
+		"efficiency": get_upgrade_cost("efficiency", current_levels.get("efficiency", 1))
+	} 
