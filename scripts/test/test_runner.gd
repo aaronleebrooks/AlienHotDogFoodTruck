@@ -183,36 +183,22 @@ func run_production_tests() -> void:
 	"""Run production system tests"""
 	append_result("[color=yellow]Starting Production System Tests[/color]")
 	
-	# Create test utilities
-	var test_utils = preload("res://scripts/test/test_utilities.gd").new()
-	var mock_production = test_utils.create_mock_production_system(1.0, 10)
+	# Load and instantiate the production test scene
+	var test_scene = preload("res://scenes/test/test_production_system.tscn")
+	var test_instance = test_scene.instantiate()
 	
-	# Test 1: Add to queue
-	append_result("  [color=gray]Running: test_add_to_queue[/color]")
-	var add_success = mock_production.add_to_queue()
-	if add_success and mock_production.current_queue_size == 1:
-		append_result("  [color=green]✅ test_add_to_queue PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_add_to_queue FAILED[/color]")
+	# Add the test instance to the scene tree so it can run
+	add_child(test_instance)
 	
-	# Test 2: Production stats
-	append_result("  [color=gray]Running: test_production_stats[/color]")
-	var stats = mock_production.get_production_stats()
-	if stats.has("current_queue_size") and stats.has("total_produced"):
-		append_result("  [color=green]✅ test_production_stats PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_production_stats FAILED[/color]")
+	# Wait for the test to complete (give it more time for async operations)
+	for i in range(30):  # Wait up to 30 frames for comprehensive tests
+		await get_tree().process_frame
 	
-	# Test 3: Produce hot dog
-	append_result("  [color=gray]Running: test_produce_hot_dog[/color]")
-	var initial_produced = mock_production.total_produced
-	mock_production.produce_hot_dog()
-	if mock_production.total_produced == initial_produced + 1:
-		append_result("  [color=green]✅ test_produce_hot_dog PASSED[/color]")
-	else:
-		append_result("  [color=red]❌ test_produce_hot_dog FAILED[/color]")
+	# Remove the test instance
+	test_instance.queue_free()
 	
 	append_result("[color=blue]Production System Tests Completed[/color]")
+	append_result("[color=gray]Check console for detailed test output[/color]")
 
 func run_save_manager_tests() -> void:
 	"""Run SaveManager system tests"""
