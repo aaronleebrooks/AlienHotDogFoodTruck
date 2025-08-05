@@ -138,6 +138,10 @@ func add_to_queue() -> bool:
 	if production_data.add_to_queue():
 		queue_updated.emit(production_data.current_queue_size, production_data.get_current_capacity())
 		
+		# Start production if this is the first hot dog and not already producing
+		if production_data.current_queue_size == 1 and not production_data.is_producing:
+			start_production()
+		
 		# Check if queue is full
 		if production_data.current_queue_size >= production_data.get_current_capacity():
 			queue_full.emit()
@@ -192,13 +196,9 @@ func get_queue_status() -> Dictionary:
 func get_production_statistics() -> Dictionary:
 	"""Get comprehensive production statistics"""
 	if not is_initialized:
-		print("ProductionSystem: DEBUG - Not initialized, returning empty dict")
 		return {}
 	
-	var stats = production_data.get_production_statistics()
-	print("ProductionSystem: DEBUG - Returning production statistics: %s" % stats)
-	print("ProductionSystem: DEBUG - Stats type: %s, keys: %s" % [typeof(stats), stats.keys() if stats is Dictionary else "N/A"])
-	return stats
+	return production_data.get_production_statistics()
 
 ## upgrade_production_rate
 ## 
