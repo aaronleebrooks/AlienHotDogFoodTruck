@@ -192,9 +192,13 @@ func get_queue_status() -> Dictionary:
 func get_production_statistics() -> Dictionary:
 	"""Get comprehensive production statistics"""
 	if not is_initialized:
+		print("ProductionSystem: DEBUG - Not initialized, returning empty dict")
 		return {}
 	
-	return production_data.get_production_statistics()
+	var stats = production_data.get_production_statistics()
+	print("ProductionSystem: DEBUG - Returning production statistics: %s" % stats)
+	print("ProductionSystem: DEBUG - Stats type: %s, keys: %s" % [typeof(stats), stats.keys() if stats is Dictionary else "N/A"])
+	return stats
 
 ## upgrade_production_rate
 ## 

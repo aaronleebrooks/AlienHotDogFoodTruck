@@ -247,7 +247,7 @@ func get_queue_status() -> Dictionary:
 ##   var stats = production_data.get_production_statistics()
 func get_production_statistics() -> Dictionary:
 	"""Get comprehensive production statistics"""
-	return {
+	var stats = {
 		"current_rate": get_current_production_rate(),
 		"peak_rate": peak_production_rate,
 		"average_rate": average_production_rate,
@@ -259,6 +259,8 @@ func get_production_statistics() -> Dictionary:
 		"efficiency_level": efficiency_level,
 		"is_producing": is_producing
 	}
+	print("ProductionData: DEBUG - get_production_statistics() returning: %s" % stats)
+	return stats
 
 func _update_production_statistics() -> void:
 	"""Update production statistics"""
