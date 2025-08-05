@@ -122,7 +122,14 @@ func _on_screen_changed(new_screen: String, old_screen: String) -> void:
 func _on_hot_dog_produced() -> void:
 	"""Handle hot dog production"""
 	print("MainScene: Hot dog produced")
-	# Note: The production system already sells the hot dog, so we don't need to call sell_hot_dog() here
+	
+	# Add money for the sold hot dog
+	if economy_system:
+		var hot_dog_price = economy_system.hot_dog_price
+		economy_system.add_money(hot_dog_price, "Hot dog sold")
+		print("MainScene: Added $%.2f for hot dog sale" % hot_dog_price)
+	else:
+		print("MainScene: WARNING - EconomySystem not found!")
 
 func _on_money_changed(new_amount: float, change: float) -> void:
 	"""Handle money changes"""
