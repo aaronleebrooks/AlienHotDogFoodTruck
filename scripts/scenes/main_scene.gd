@@ -153,33 +153,10 @@ func _refresh_ui_after_load() -> void:
 	
 	# Update production display
 	if production_system:
-		print("MainScene: DEBUG - ProductionSystem found, getting statistics...")
 		var production_stats = production_system.get_production_statistics()
-		print("MainScene: DEBUG - Production stats type: %s" % typeof(production_stats))
-		print("MainScene: DEBUG - Production stats: %s" % production_stats)
-		
-		if production_stats is Dictionary:
-			print("MainScene: DEBUG - Production stats is Dictionary, keys: %s" % production_stats.keys())
-			
-			if production_stats.has("total_produced"):
-				game_ui.update_production_info(production_stats["total_produced"])
-				print("MainScene: DEBUG - Updated production info with: %d" % production_stats["total_produced"])
-			else:
-				print("MainScene: ERROR - 'total_produced' key not found in production stats!")
-			
-			if production_stats.has("current_size") and production_stats.has("max_size"):
-				game_ui.update_queue_info(production_stats["current_size"], production_stats["max_size"])
-				print("MainScene: DEBUG - Updated queue info with: %d/%d" % [production_stats["current_size"], production_stats["max_size"]])
-			else:
-				print("MainScene: ERROR - 'current_size' or 'max_size' keys not found in production stats!")
-			
-			print("MainScene: Updated production display - Produced: %d, Queue: %d/%d" % [
-				production_stats.get("total_produced", 0), 
-				production_stats.get("current_size", 0), 
-				production_stats.get("max_size", 0)
-			])
-		else:
-			print("MainScene: ERROR - Production stats is not a Dictionary! Type: %s" % typeof(production_stats))
+		game_ui.update_production_info(production_stats["total_produced"])
+		game_ui.update_queue_info(production_stats["current_size"], production_stats["max_size"])
+		print("MainScene: Updated production display - Produced: " + str(production_stats["total_produced"]) + ", Queue: " + str(production_stats["current_size"]) + "/" + str(production_stats["max_size"]))
 	else:
 		print("MainScene: WARNING - ProductionSystem not found!")
 
