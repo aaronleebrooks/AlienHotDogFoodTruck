@@ -154,12 +154,12 @@ func _refresh_ui_after_load() -> void:
 	# Update production display
 	if production_system:
 		var production_stats = production_system.get_production_statistics()
-		game_ui.update_production_info(production_stats.total_produced)
-		game_ui.update_queue_info(production_stats.current_size, production_stats.max_size)
+		game_ui.update_production_info(production_stats["total_produced"])
+		game_ui.update_queue_info(production_stats["current_size"], production_stats["max_size"])
 		print("MainScene: Updated production display - Produced: %d, Queue: %d/%d" % [
-			production_stats.total_produced, 
-			production_stats.current_size, 
-			production_stats.max_size
+			production_stats["total_produced"], 
+			production_stats["current_size"], 
+			production_stats["max_size"]
 		])
 	else:
 		print("MainScene: WARNING - ProductionSystem not found!")
