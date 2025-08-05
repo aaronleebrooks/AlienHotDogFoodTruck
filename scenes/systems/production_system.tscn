@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bqxvn8yqxqxqx"]
+[gd_scene load_steps=2 format=3 uid="uid://prodsysembx1"]
 
 [ext_resource type="Script" path="res://scripts/systems/production_system.gd" id="1_0xqxq"]
 
@@ -12,4 +12,4 @@ autostart = false
 
 [node name="ProductionQueue" type="Node" parent="."]
 
-[node name="ProductionStats" type="Node" parent="."] 
+[node name="ProductionStats" type="Node" parent="."]
