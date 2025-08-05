@@ -47,8 +47,15 @@ func setup_signal_connections() -> void:
 	signal_connections.append(SignalUtils.connect_signal(SaveManager, "load_failed", _on_save_load_failed))
 	
 	# Connect system signals
-	signal_connections.append(SignalUtils.connect_signal(production_system, "hot_dog_produced", _on_hot_dog_produced))
-	signal_connections.append(SignalUtils.connect_signal(economy_system, "money_changed", _on_money_changed))
+	if production_system:
+		signal_connections.append(SignalUtils.connect_signal(production_system, "hot_dog_produced", _on_hot_dog_produced))
+	else:
+		print("MainScene: WARNING - ProductionSystem not found for signal connection!")
+	
+	if economy_system:
+		signal_connections.append(SignalUtils.connect_signal(economy_system, "money_changed", _on_money_changed))
+	else:
+		print("MainScene: WARNING - EconomySystem not found for signal connection!")
 	
 	# Connect GameUI signals
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "add_hot_dog_requested", _on_add_hot_dog_requested))
@@ -137,19 +144,25 @@ func _refresh_ui_after_load() -> void:
 	print("MainScene: Refreshing UI after load")
 	
 	# Update money display
-	var current_money = economy_system.get_current_money()
-	game_ui.update_money_display(current_money)
-	print("MainScene: Updated money display to $%.2f" % current_money)
+	if economy_system:
+		var current_money = economy_system.get_current_money()
+		game_ui.update_money_display(current_money)
+		print("MainScene: Updated money display to $%.2f" % current_money)
+	else:
+		print("MainScene: WARNING - EconomySystem not found!")
 	
 	# Update production display
-	var production_stats = production_system.get_production_stats()
-	game_ui.update_production_info(production_stats["total_produced"])
-	game_ui.update_queue_info(production_stats["current_queue_size"], production_stats["max_queue_size"])
-	print("MainScene: Updated production display - Produced: %d, Queue: %d/%d" % [
-		production_stats["total_produced"], 
-		production_stats["current_queue_size"], 
-		production_stats["max_queue_size"]
-	])
+	if production_system:
+		var production_stats = production_system.get_production_statistics()
+		game_ui.update_production_info(production_stats.total_produced)
+		game_ui.update_queue_info(production_stats.current_size, production_stats.max_size)
+		print("MainScene: Updated production display - Produced: %d, Queue: %d/%d" % [
+			production_stats.total_produced, 
+			production_stats.current_size, 
+			production_stats.max_size
+		])
+	else:
+		print("MainScene: WARNING - ProductionSystem not found!")
 
 func _on_save_load_failed() -> void:
 	"""Handle save/load failure"""
@@ -185,7 +198,10 @@ func _on_quit_game_requested() -> void:
 func _on_add_hot_dog_requested() -> void:
 	"""Handle add hot dog request from UI"""
 	print("MainScene: Add hot dog requested")
-	production_system.add_to_queue()
+	if production_system:
+		production_system.add_to_queue()
+	else:
+		print("MainScene: ERROR - ProductionSystem not found!")
 
 func _on_pause_game_requested() -> void:
 	"""Handle pause game request from UI"""

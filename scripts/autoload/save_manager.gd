@@ -39,10 +39,10 @@ func save_game() -> void:
 			"transactions_count": economy_system.get_economy_stats()["transactions_count"] if economy_system else 0
 		},
 		"production": {
-			"is_producing": production_system.get_production_stats()["is_producing"] if production_system else false,
-			"current_queue_size": production_system.get_production_stats()["current_queue_size"] if production_system else 0,
-			"total_produced": production_system.get_production_stats()["total_produced"] if production_system else 0,
-			"production_rate": production_system.get_production_stats()["production_rate"] if production_system else 1.0
+			"is_producing": production_system.get_production_statistics()["is_producing"] if production_system else false,
+			"current_queue_size": production_system.get_production_statistics()["current_size"] if production_system else 0,
+			"total_produced": production_system.get_production_statistics()["total_produced"] if production_system else 0,
+			"production_rate": production_system.get_production_statistics()["current_rate"] if production_system else 1.0
 		}
 	}
 	
