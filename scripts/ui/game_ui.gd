@@ -131,8 +131,8 @@ func _on_money_changed(new_amount: float, change: float) -> void:
 	print("GameUI: Money changed by $%.2f. New total: $%.2f" % [change, new_amount])
 	money_label.text = "Money: $%.2f" % new_amount
 	
-	# Update upgrade buttons when money changes
-	_update_upgrade_buttons_from_main_scene()
+	# Emit event to request upgrade button updates (event-driven approach)
+	EventBus.emit_event("upgrade_buttons_update_requested", {"money": new_amount})
 
 func update_money_display(amount: float) -> void:
 	"""Update money display (for save/load)"""
@@ -197,9 +197,4 @@ func _exit_tree() -> void:
 	signal_connections.clear()
 	print("GameUI: Signal cleanup completed")
 
-func _update_upgrade_buttons_from_main_scene() -> void:
-	"""Request upgrade button update from main scene"""
-	# Get reference to main scene and ask it to update upgrade buttons
-	var main_scene = get_parent().get_parent()
-	if main_scene and main_scene.has_method("_update_upgrade_buttons"):
-		main_scene._update_upgrade_buttons() 
+ 

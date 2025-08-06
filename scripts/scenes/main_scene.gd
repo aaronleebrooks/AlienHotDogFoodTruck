@@ -57,6 +57,9 @@ func setup_signal_connections() -> void:
 	else:
 		print("MainScene: WARNING - EconomySystem not found for signal connection!")
 	
+	# Connect to EventBus for upgrade button updates
+	EventBus.register_listener("upgrade_buttons_update_requested", _on_upgrade_buttons_update_requested)
+	
 	# Connect GameUI signals
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "add_hot_dog_requested", _on_add_hot_dog_requested))
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "pause_game_requested", _on_pause_game_requested))
@@ -131,9 +134,7 @@ func _on_hot_dog_produced() -> void:
 		var hot_dog_price = economy_system.hot_dog_price
 		economy_system.add_money(hot_dog_price, "Hot dog sold")
 		print("MainScene: Added $%.2f for hot dog sale" % hot_dog_price)
-		
-		# Update upgrade buttons since money changed
-		_update_upgrade_buttons()
+		# Note: Upgrade buttons will update automatically via event when money_changed is emitted
 	else:
 		print("MainScene: WARNING - EconomySystem not found!")
 
@@ -275,6 +276,11 @@ func _update_upgrade_buttons() -> void:
 	
 	game_ui.update_upgrade_buttons(upgrade_costs, can_afford)
 
+func _on_upgrade_buttons_update_requested(event_data: Dictionary) -> void:
+	"""Handle event-driven upgrade button update requests"""
+	print("MainScene: Received upgrade button update request (event-driven)")
+	_update_upgrade_buttons()
+
 func _print_scene_tree(node: Node, depth: int) -> void:
 	"""Print the scene tree structure for debugging"""
 	var indent = "  ".repeat(depth)
@@ -284,4 +290,10 @@ func _print_scene_tree(node: Node, depth: int) -> void:
 	print(node_info)
 	
 	for child in node.get_children():
-		_print_scene_tree(child, depth + 1) 
+		_print_scene_tree(child, depth + 1)
+
+func _exit_tree() -> void:
+	"""Clean up when the scene is removed"""
+	# Unregister EventBus listeners
+	EventBus.unregister_listener("upgrade_buttons_update_requested")
+	print("MainScene: EventBus listeners cleaned up") 
