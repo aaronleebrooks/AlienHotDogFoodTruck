@@ -86,7 +86,11 @@ func _exit_tree() -> void:
 		SignalUtils.disconnect_signal(connection_id)
 	
 	signal_connections.clear()
-	print("MainScene: Signal cleanup completed")
+	
+	# Unregister EventBus listeners
+	EventBus.unregister_listener("upgrade_buttons_update_requested")
+	
+	print("MainScene: Signal cleanup and EventBus cleanup completed")
 
 func show_ui(ui_name: String) -> void:
 	"""Show a specific UI screen"""
@@ -292,8 +296,4 @@ func _print_scene_tree(node: Node, depth: int) -> void:
 	for child in node.get_children():
 		_print_scene_tree(child, depth + 1)
 
-func _exit_tree() -> void:
-	"""Clean up when the scene is removed"""
-	# Unregister EventBus listeners
-	EventBus.unregister_listener("upgrade_buttons_update_requested")
-	print("MainScene: EventBus listeners cleaned up") 
+ 
