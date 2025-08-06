@@ -10,12 +10,18 @@ extends Control
 @onready var pause_button: Button = $GameArea/VBoxContainer/PauseButton
 @onready var save_button: Button = $GameArea/VBoxContainer/SaveButton
 @onready var add_hot_dog_button: Button = $GameArea/VBoxContainer/AddHotDogButton
+@onready var upgrade_rate_button: Button = $GameArea/VBoxContainer/UpgradeSection/UpgradeRateButton
+@onready var upgrade_capacity_button: Button = $GameArea/VBoxContainer/UpgradeSection/UpgradeCapacityButton
+@onready var upgrade_efficiency_button: Button = $GameArea/VBoxContainer/UpgradeSection/UpgradeEfficiencyButton
 
 # Signals - UI emits these, main scene listens
 signal add_hot_dog_requested
 signal pause_game_requested
 signal save_game_requested
 signal menu_requested
+signal upgrade_rate_requested
+signal upgrade_capacity_requested
+signal upgrade_efficiency_requested
 
 # Signal connection tracking
 var signal_connections: Array[String] = []
@@ -36,6 +42,9 @@ func setup_signal_connections() -> void:
 	signal_connections.append(SignalUtils.connect_signal(pause_button, "pressed", _on_pause_pressed))
 	signal_connections.append(SignalUtils.connect_signal(save_button, "pressed", _on_save_pressed))
 	signal_connections.append(SignalUtils.connect_signal(add_hot_dog_button, "pressed", _on_add_hot_dog_pressed))
+	signal_connections.append(SignalUtils.connect_signal(upgrade_rate_button, "pressed", _on_upgrade_rate_pressed))
+	signal_connections.append(SignalUtils.connect_signal(upgrade_capacity_button, "pressed", _on_upgrade_capacity_pressed))
+	signal_connections.append(SignalUtils.connect_signal(upgrade_efficiency_button, "pressed", _on_upgrade_efficiency_pressed))
 	
 	# Connect GameManager signals
 	signal_connections.append(SignalUtils.connect_signal(GameManager, "game_started", _on_game_started))
@@ -75,6 +84,21 @@ func _on_add_hot_dog_pressed() -> void:
 	"""Handle add hot dog button press"""
 	print("GameUI: Add hot dog pressed")
 	add_hot_dog_requested.emit()
+
+func _on_upgrade_rate_pressed() -> void:
+	"""Handle upgrade rate button press"""
+	print("GameUI: Upgrade rate pressed")
+	upgrade_rate_requested.emit()
+
+func _on_upgrade_capacity_pressed() -> void:
+	"""Handle upgrade capacity button press"""
+	print("GameUI: Upgrade capacity pressed")
+	upgrade_capacity_requested.emit()
+
+func _on_upgrade_efficiency_pressed() -> void:
+	"""Handle upgrade efficiency button press"""
+	print("GameUI: Upgrade efficiency pressed")
+	upgrade_efficiency_requested.emit()
 
 func _on_game_started() -> void:
 	"""Handle game started signal"""
@@ -121,6 +145,29 @@ func update_queue_info(current: int, max_size: int) -> void:
 	"""Update queue information display"""
 	# Note: This would need a queue info label in the UI
 	print("GameUI: Queue info updated - Current: %d/%d" % [current, max_size])
+
+func update_upgrade_buttons(upgrade_costs: Dictionary, can_afford: Dictionary) -> void:
+	"""Update upgrade buttons with costs and availability"""
+	# Update rate upgrade button
+	var rate_cost = upgrade_costs.get("rate", 0.0)
+	var can_afford_rate = can_afford.get("rate", false)
+	upgrade_rate_button.text = "Upgrade Production Rate ($%.0f)" % rate_cost
+	upgrade_rate_button.disabled = not can_afford_rate
+	upgrade_rate_button.modulate = Color.GREEN if can_afford_rate else Color.GRAY
+	
+	# Update capacity upgrade button
+	var capacity_cost = upgrade_costs.get("capacity", 0.0)
+	var can_afford_capacity = can_afford.get("capacity", false)
+	upgrade_capacity_button.text = "Upgrade Capacity ($%.0f)" % capacity_cost
+	upgrade_capacity_button.disabled = not can_afford_capacity
+	upgrade_capacity_button.modulate = Color.GREEN if can_afford_capacity else Color.GRAY
+	
+	# Update efficiency upgrade button
+	var efficiency_cost = upgrade_costs.get("efficiency", 0.0)
+	var can_afford_efficiency = can_afford.get("efficiency", false)
+	upgrade_efficiency_button.text = "Upgrade Efficiency ($%.0f)" % efficiency_cost
+	upgrade_efficiency_button.disabled = not can_afford_efficiency
+	upgrade_efficiency_button.modulate = Color.GREEN if can_afford_efficiency else Color.GRAY
 
 func _connect_to_systems() -> void:
 	"""Connect to system signals"""

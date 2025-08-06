@@ -78,3 +78,26 @@ text = "Save Game"
 [node name="AddHotDogButton" type="Button" parent="GameArea/VBoxContainer"]
 layout_mode = 2
 text = "Add Hot Dog to Queue"
+
+[node name="HSeparator" type="HSeparator" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+
+[node name="UpgradeSection" type="VBoxContainer" parent="GameArea/VBoxContainer"]
+layout_mode = 2
+
+[node name="UpgradeTitle" type="Label" parent="GameArea/VBoxContainer/UpgradeSection"]
+layout_mode = 2
+text = "Upgrades"
+horizontal_alignment = 1
+
+[node name="UpgradeRateButton" type="Button" parent="GameArea/VBoxContainer/UpgradeSection"]
+layout_mode = 2
+text = "Upgrade Production Rate ($25)"
+
+[node name="UpgradeCapacityButton" type="Button" parent="GameArea/VBoxContainer/UpgradeSection"]
+layout_mode = 2
+text = "Upgrade Capacity ($30)"
+
+[node name="UpgradeEfficiencyButton" type="Button" parent="GameArea/VBoxContainer/UpgradeSection"]
+layout_mode = 2
+text = "Upgrade Efficiency ($40)"

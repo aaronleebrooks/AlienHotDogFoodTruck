@@ -62,6 +62,9 @@ func setup_signal_connections() -> void:
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "pause_game_requested", _on_pause_game_requested))
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "save_game_requested", _on_save_game_requested))
 	signal_connections.append(SignalUtils.connect_signal(game_ui, "menu_requested", _on_menu_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "upgrade_rate_requested", _on_upgrade_rate_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "upgrade_capacity_requested", _on_upgrade_capacity_requested))
+	signal_connections.append(SignalUtils.connect_signal(game_ui, "upgrade_efficiency_requested", _on_upgrade_efficiency_requested))
 	
 	# Connect MenuUI signals
 	signal_connections.append(SignalUtils.connect_signal(menu_ui, "start_game_requested", _on_start_game_requested))
@@ -165,6 +168,9 @@ func _refresh_ui_after_load() -> void:
 		game_ui.update_production_info(production_stats["total_produced"])
 		game_ui.update_queue_info(queue_status["current_size"], queue_status["max_size"])
 		print("MainScene: Updated production display - Produced: " + str(production_stats["total_produced"]) + ", Queue: " + str(queue_status["current_size"]) + "/" + str(queue_status["max_size"]))
+		
+		# Update upgrade buttons
+		_update_upgrade_buttons()
 	else:
 		print("MainScene: WARNING - ProductionSystem not found!")
 
@@ -224,6 +230,47 @@ func _on_menu_requested() -> void:
 	"""Handle menu request from UI"""
 	print("MainScene: Menu requested")
 	UIManager.show_screen("menu")
+
+func _on_upgrade_rate_requested() -> void:
+	"""Handle upgrade rate request from UI"""
+	print("MainScene: Upgrade rate requested")
+	if production_system:
+		production_system.upgrade_production_rate()
+		_update_upgrade_buttons()
+	else:
+		print("MainScene: ERROR - ProductionSystem not found!")
+
+func _on_upgrade_capacity_requested() -> void:
+	"""Handle upgrade capacity request from UI"""
+	print("MainScene: Upgrade capacity requested")
+	if production_system:
+		production_system.upgrade_capacity()
+		_update_upgrade_buttons()
+	else:
+		print("MainScene: ERROR - ProductionSystem not found!")
+
+func _on_upgrade_efficiency_requested() -> void:
+	"""Handle upgrade efficiency request from UI"""
+	print("MainScene: Upgrade efficiency requested")
+	if production_system:
+		production_system.upgrade_efficiency()
+		_update_upgrade_buttons()
+	else:
+		print("MainScene: ERROR - ProductionSystem not found!")
+
+func _update_upgrade_buttons() -> void:
+	"""Update upgrade buttons with current costs and affordability"""
+	if not production_system or not game_ui:
+		return
+	
+	var upgrade_costs = production_system.get_upgrade_costs()
+	var can_afford = {
+		"rate": production_system.can_afford_upgrade("rate"),
+		"capacity": production_system.can_afford_upgrade("capacity"),
+		"efficiency": production_system.can_afford_upgrade("efficiency")
+	}
+	
+	game_ui.update_upgrade_buttons(upgrade_costs, can_afford)
 
 func _print_scene_tree(node: Node, depth: int) -> void:
 	"""Print the scene tree structure for debugging"""
