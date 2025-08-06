@@ -131,6 +131,9 @@ func _on_hot_dog_produced() -> void:
 		var hot_dog_price = economy_system.hot_dog_price
 		economy_system.add_money(hot_dog_price, "Hot dog sold")
 		print("MainScene: Added $%.2f for hot dog sale" % hot_dog_price)
+		
+		# Update upgrade buttons since money changed
+		_update_upgrade_buttons()
 	else:
 		print("MainScene: WARNING - EconomySystem not found!")
 
