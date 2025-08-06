@@ -88,8 +88,40 @@ func _update_ui() -> void:
 	rate_label.text = "Rate: %.1f hot dogs/sec" % stats.current_rate
 	total_label.text = "Total Produced: %d" % stats.total_produced
 	
+	# Update upgrade buttons with costs
+	_update_upgrade_buttons()
+	
 	# Update button states
 	_update_button_states()
+
+func _update_upgrade_buttons() -> void:
+	"""Update upgrade buttons with costs and availability"""
+	if not production_system:
+		return
+	
+	# Get upgrade costs
+	var upgrade_costs = production_system.get_upgrade_costs()
+	
+	# Update rate upgrade button
+	var rate_cost = upgrade_costs.get("rate", 0.0)
+	var can_afford_rate = production_system.can_afford_upgrade("rate")
+	upgrade_rate_button.text = "Upgrade Production Rate ($%.0f)" % rate_cost
+	upgrade_rate_button.disabled = not can_afford_rate
+	upgrade_rate_button.modulate = Color.GREEN if can_afford_rate else Color.GRAY
+	
+	# Update capacity upgrade button
+	var capacity_cost = upgrade_costs.get("capacity", 0.0)
+	var can_afford_capacity = production_system.can_afford_upgrade("capacity")
+	upgrade_capacity_button.text = "Upgrade Capacity ($%.0f)" % capacity_cost
+	upgrade_capacity_button.disabled = not can_afford_capacity
+	upgrade_capacity_button.modulate = Color.GREEN if can_afford_capacity else Color.GRAY
+	
+	# Update efficiency upgrade button
+	var efficiency_cost = upgrade_costs.get("efficiency", 0.0)
+	var can_afford_efficiency = production_system.can_afford_upgrade("efficiency")
+	upgrade_efficiency_button.text = "Upgrade Efficiency ($%.0f)" % efficiency_cost
+	upgrade_efficiency_button.disabled = not can_afford_efficiency
+	upgrade_efficiency_button.modulate = Color.GREEN if can_afford_efficiency else Color.GRAY
 
 func _update_button_states() -> void:
 	"""Update button enabled/disabled states"""
