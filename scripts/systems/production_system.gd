@@ -453,7 +453,13 @@ func _get_upgrade_cost(upgrade_type: String, current_level: int) -> float:
 
 func _can_afford_upgrade(cost: float) -> bool:
 	"""Check if the player can afford an upgrade"""
+	# Try multiple paths to find EconomySystem
 	var economy_system = get_node_or_null("/root/EconomySystem")
+	if not economy_system:
+		economy_system = get_node_or_null("../EconomySystem")
+	if not economy_system:
+		economy_system = get_node_or_null("/root/MainScene/Systems/EconomySystem")
+	
 	if not economy_system:
 		print("ProductionSystem: WARNING - EconomySystem not found, allowing upgrade")
 		return true
@@ -462,7 +468,13 @@ func _can_afford_upgrade(cost: float) -> bool:
 
 func _spend_money_on_upgrade(cost: float, description: String) -> bool:
 	"""Spend money on an upgrade"""
+	# Try multiple paths to find EconomySystem
 	var economy_system = get_node_or_null("/root/EconomySystem")
+	if not economy_system:
+		economy_system = get_node_or_null("../EconomySystem")
+	if not economy_system:
+		economy_system = get_node_or_null("/root/MainScene/Systems/EconomySystem")
+	
 	if not economy_system:
 		print("ProductionSystem: WARNING - EconomySystem not found, skipping payment")
 		return true
